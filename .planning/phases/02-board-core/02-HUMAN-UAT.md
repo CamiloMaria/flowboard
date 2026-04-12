@@ -3,7 +3,7 @@ status: complete
 phase: 02-board-core
 source: [02-VERIFICATION.md]
 started: 2026-04-12T17:10:00.000Z
-updated: 2026-04-12T18:05:00.000Z
+updated: 2026-04-12T20:00:00.000Z
 ---
 
 ## Current Test
@@ -12,71 +12,39 @@ updated: 2026-04-12T18:05:00.000Z
 
 ## Tests
 
-### 1. Visual board rendering
-expected: Dark theme board with 5 columns and 17 cards, colored accent stripes, loading skeleton on first load, connection status indicator
+### 1. Cross-list drag-and-drop (re-test)
+expected: Drag a card from one list to another. Card appears exactly once in the target list, never duplicated.
 result: pass
-note: Required fix — @tailwindcss/vite plugin was missing (commit 8bdbd7b). After fix, dark theme renders correctly.
 
-### 2. Drag-and-drop interaction
-expected: Cards drag with ghost overlay (scale+rotate+shadow), drop indicators visible between cards, auto-scroll at container edges, smooth layout animations on drop
-result: issue
-reported: "Animations and drag-and-drop work. But when dragging a card from one list to another (e.g. In Progress to Review), the card gets duplicated in the target list."
-severity: major
-
-### 3. Move failure revert
-expected: When backend rejects a card move, card reverts to original position with animation and toast notification appears
-result: issue
-reported: "Toast appears correctly but card does not snap back to original position. After a second the entire page shows 'Failed to load board' error."
-severity: major
-
-### 4. Two-tab real-time sync
-expected: Open board in two browser tabs — card moves, creates, edits, and deletes in one tab appear instantly in the other with smooth animation
-result: issue
-reported: "Real-time sync works across tabs. But cannot drop cards into an empty list — once all cards are dragged out of a list (e.g. To Do), it won't accept drops anymore."
-severity: major
-
-### 5. Card detail modal interaction
-expected: Click card opens detail modal with editable title, description textarea, delete button. Modal closes on backdrop click or Escape key
+### 2. Move failure revert (re-test)
+expected: Stop the API, drag a card. Toast appears, card stays in original position, board remains visible (no "Failed to load board" crash).
 result: pass
+
+### 3. Empty list drops (re-test)
+expected: Empty all cards from a list, then drag a card into it. The empty list accepts the drop.
+result: pass
+
+### 4. Card creation as guest
+expected: Click "Add a card" in any list, type a title, press Enter. Card appears in the list.
+result: pass
+
+### 5. Visual board rendering
+expected: Dark theme with styled columns, cards, connection status indicator. No unstyled/white page.
+result: pass
+note: Verified in prior session. @tailwindcss/vite plugin fix (commit 8bdbd7b).
+
+### 6. Card detail modal
+expected: Click a card to open detail modal with editable title, description, delete button. Closes on backdrop/Escape.
+result: pass
+note: Verified in prior session.
 
 ## Summary
 
-total: 5
-passed: 2
-issues: 3
+total: 6
+passed: 6
+issues: 0
 pending: 0
 skipped: 0
 blocked: 0
 
 ## Gaps
-
-- truth: "Cross-list card drag-and-drop moves card without duplication"
-  status: failed
-  reason: "User reported: dragging card from one list to another duplicates the card in the target list. Likely double-insert from optimistic update + Socket.io broadcast hitting the same client."
-  severity: major
-  test: 2
-  artifacts:
-    - apps/web/src/hooks/useBoardDnd.ts
-    - apps/web/src/hooks/useBoardSocket.ts
-    - apps/web/src/hooks/useBoardMutations.ts
-  missing: []
-
-- truth: "When backend rejects a card move, card reverts to original position with animation"
-  status: failed
-  reason: "User reported: toast appears but card does not snap back. After ~1 second the page crashes to 'Failed to load board'. The onError rollback in useMoveCard likely restores a stale snapshot, and TanStack Query refetch fails because the API is down, triggering the error state."
-  severity: major
-  test: 3
-  artifacts:
-    - apps/web/src/hooks/useBoardDnd.ts
-    - apps/web/src/hooks/useBoardMutations.ts
-  missing: []
-
-- truth: "Cards can be dropped into empty lists"
-  status: failed
-  reason: "User reported: once all cards are dragged out of a list, it becomes impossible to drop cards back into it. The empty list has no drop target. Likely the sortable container or droppable zone collapses to zero height when it has no children, so @dnd-kit can't detect it as a valid drop target."
-  severity: major
-  test: 4
-  artifacts:
-    - apps/web/src/components/board/ColumnContainer.tsx
-    - apps/web/src/hooks/useBoardDnd.ts
-  missing: []
