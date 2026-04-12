@@ -35,8 +35,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {
     this.refreshSecret =
-      this.configService.get<string>('JWT_REFRESH_SECRET') ??
-      'dev-refresh-secret';
+      this.configService.getOrThrow<string>('JWT_REFRESH_SECRET');
   }
 
   async register(dto: RegisterDto) {
