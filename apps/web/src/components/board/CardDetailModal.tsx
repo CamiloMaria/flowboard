@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, Trash2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import type { Card } from '@flowboard/shared';
 import { InlineInput } from './InlineInput';
 import { useUpdateCard, useDeleteCard } from '../../hooks/useBoardMutations';
@@ -82,7 +82,6 @@ export function CardDetailModal({ card, listName, boardId, onClose }: CardDetail
   });
 
   return (
-    <AnimatePresence>
       <motion.div
         key="modal-overlay"
         className="fixed inset-0 z-50 flex items-start justify-center bg-bg-base/70 backdrop-blur-sm"
@@ -206,6 +205,5 @@ export function CardDetailModal({ card, listName, boardId, onClose }: CardDetail
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
   );
 }
