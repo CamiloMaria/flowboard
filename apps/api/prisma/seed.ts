@@ -16,7 +16,7 @@ const BOT_USERS = [
 ];
 
 /** Stable demo board ID for seed idempotency */
-const DEMO_BOARD_ID = 'demo-board-00000000-0000-0000-0000';
+const DEMO_BOARD_ID = '00000000-0000-0000-0000-000000000000';
 
 const LISTS = ['Backlog', 'To Do', 'In Progress', 'Review', 'Done'];
 
