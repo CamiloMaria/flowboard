@@ -48,7 +48,7 @@ export function AddListGhost({ onAdd }: AddListGhostProps) {
         className="w-[280px] min-w-[280px] border border-dashed border-border-subtle rounded-[12px] flex items-center justify-center gap-1 py-8 text-text-muted hover:border-accent hover:text-accent transition-colors cursor-pointer"
       >
         <Plus size={16} />
-        <span className="font-body text-sm">+ Add List</span>
+        <span className="font-body text-sm">Add List</span>
       </button>
     );
   }
