@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useDroppable } from '@dnd-kit/react';
 import { Plus, MoreHorizontal } from 'lucide-react';
 import type { ListWithCards } from '@flowboard/shared';
 import { CardItem } from './CardItem';
@@ -24,6 +25,14 @@ export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
   const [isAddingCard, setIsAddingCard] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Droppable for detecting drag-over state on this column
+  const { ref: dropRef, isDropTarget } = useDroppable({
+    id: `column-${list.id}`,
+    type: 'column',
+    accept: 'item',
+    collisionPriority: 1,
+  });
 
   // Close menu on outside click
   useEffect(() => {
@@ -55,9 +64,15 @@ export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
 
   return (
     <div
-      className="w-[280px] min-w-[280px] bg-bg-surface border border-border-subtle rounded-[12px] p-3 flex flex-col"
+      ref={dropRef}
+      className={`w-[280px] min-w-[280px] bg-bg-surface border rounded-[12px] p-3 flex flex-col transition-colors ${
+        isDropTarget
+          ? 'border-accent bg-bg-surface'
+          : 'border-border-subtle'
+      }`}
       role="region"
       aria-label={list.name}
+      style={isDropTarget ? { boxShadow: 'inset 0 0 0 1px rgba(34, 211, 238, 0.05)' } : undefined}
     >
       {/* Column Header */}
       <div className="flex items-center justify-between p-3">
@@ -149,11 +164,12 @@ export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
             </p>
           </div>
         ) : (
-          sortedCards.map((card) => (
+          sortedCards.map((card, index) => (
             <CardItem
               key={card.id}
               card={card}
               boardId={boardId}
+              index={index}
               onClick={() => useBoardStore.getState().openCard(card.id)}
             />
           ))

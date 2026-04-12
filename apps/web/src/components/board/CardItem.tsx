@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSortable } from '@dnd-kit/react/sortable';
 import type { Card } from '@flowboard/shared';
 import { InlineInput } from './InlineInput';
 import { useUpdateCard } from '../../hooks/useBoardMutations';
@@ -6,12 +7,22 @@ import { useUpdateCard } from '../../hooks/useBoardMutations';
 interface CardItemProps {
   card: Card;
   boardId: string;
+  index: number;
   onClick: () => void;
 }
 
-export function CardItem({ card, boardId, onClick }: CardItemProps) {
+export function CardItem({ card, boardId, index, onClick }: CardItemProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const updateCard = useUpdateCard(boardId);
+
+  const { ref, isDragging } = useSortable({
+    id: card.id,
+    index,
+    data: { card, type: 'card' },
+    type: 'item',
+    accept: 'item',
+    group: card.listId,
+  });
 
   function handleTitleSave(newTitle: string) {
     updateCard.mutate({ id: card.id, title: newTitle });
@@ -19,8 +30,8 @@ export function CardItem({ card, boardId, onClick }: CardItemProps) {
   }
 
   function handleCardClick(e: React.MouseEvent) {
-    // Don't open modal if we're in edit mode
-    if (isEditingTitle) return;
+    // Don't open modal if we're in edit mode or dragging
+    if (isEditingTitle || isDragging) return;
     onClick();
   }
 
@@ -31,6 +42,7 @@ export function CardItem({ card, boardId, onClick }: CardItemProps) {
 
   return (
     <div
+      ref={ref}
       role="button"
       aria-label={card.title}
       tabIndex={0}
@@ -41,10 +53,14 @@ export function CardItem({ card, boardId, onClick }: CardItemProps) {
           onClick();
         }
       }}
-      className="bg-bg-card border border-border-subtle rounded-[8px] shadow-card cursor-grab hover:bg-bg-card-hover hover:shadow-card-hover transition-all overflow-hidden"
+      className={
+        isDragging
+          ? 'bg-bg-surface/50 border border-dashed border-border-subtle rounded-[8px] shadow-card opacity-50 overflow-hidden'
+          : 'bg-bg-card border border-border-subtle rounded-[8px] shadow-card cursor-grab hover:bg-bg-card-hover hover:shadow-card-hover transition-all overflow-hidden'
+      }
     >
       {/* Cover color stripe */}
-      {card.coverColor && (
+      {card.coverColor && !isDragging && (
         <div
           className="h-[3px] rounded-t-[7px]"
           style={{ backgroundColor: card.coverColor }}
@@ -62,8 +78,12 @@ export function CardItem({ card, boardId, onClick }: CardItemProps) {
           />
         ) : (
           <p
-            className="font-body text-sm text-text-primary truncate cursor-text"
-            onClick={handleTitleClick}
+            className={
+              isDragging
+                ? 'font-body text-sm text-transparent truncate'
+                : 'font-body text-sm text-text-primary truncate cursor-text'
+            }
+            onClick={isDragging ? undefined : handleTitleClick}
           >
             {card.title}
           </p>

@@ -188,6 +188,62 @@ export function useUpdateCard(boardId: string) {
   });
 }
 
+export function useMoveCard(boardId: string) {
+  const queryClient = getQueryClient();
+  const { addToast } = useToast();
+
+  return useMutation({
+    mutationFn: (vars: { cardId: string; targetListId: string; newPosition: number }) =>
+      apiPost<Card>(`/api/boards/${boardId}/cards/${vars.cardId}/move`, {
+        targetListId: vars.targetListId,
+        newPosition: vars.newPosition,
+      }),
+    onMutate: async (vars) => {
+      await queryClient.cancelQueries({ queryKey: ['board', boardId] });
+      const previous = queryClient.getQueryData<BoardWithLists>(['board', boardId]);
+
+      // Optimistic: update card's listId and position in cache
+      queryClient.setQueryData<BoardWithLists>(['board', boardId], (old) => {
+        if (!old) return old;
+
+        // Find the card in any list
+        let movedCard: Card | undefined;
+        const listsWithoutCard = old.lists.map((l) => {
+          const cardIndex = l.cards.findIndex((c) => c.id === vars.cardId);
+          if (cardIndex !== -1) {
+            movedCard = { ...l.cards[cardIndex], listId: vars.targetListId, position: vars.newPosition };
+            return { ...l, cards: l.cards.filter((c) => c.id !== vars.cardId) };
+          }
+          return l;
+        });
+
+        if (!movedCard) return old;
+
+        // Add card to target list
+        const updated = listsWithoutCard.map((l) => {
+          if (l.id === vars.targetListId) {
+            return { ...l, cards: [...l.cards, movedCard!] };
+          }
+          return l;
+        });
+
+        return { ...old, lists: updated };
+      });
+
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['board', boardId], context.previous);
+      }
+      addToast('error', 'Card move failed. The card has been returned to its original position.');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['board', boardId] });
+    },
+  });
+}
+
 export function useDeleteCard(boardId: string) {
   const queryClient = getQueryClient();
   const { addToast } = useToast();
