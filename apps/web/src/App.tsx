@@ -5,6 +5,7 @@ import { HomePage } from './pages/HomePage';
 import { DemoPage } from './pages/DemoPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { BoardPage } from './pages/BoardPage';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
             <Route path="/demo" element={<DemoPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/board/:boardId" element={<BoardPage />} />
           </Routes>
         </div>
       </BrowserRouter>
