@@ -27,7 +27,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Board Management
 
-- [ ] **BORD-01**: User can view a board with vertical columns (lists) and cards stacked in each
+- [x] **BORD-01**: User can view a board with vertical columns (lists) and cards stacked in each
 - [ ] **BORD-02**: User can create, rename, and delete lists on their board
 - [ ] **BORD-03**: User can create cards with title in any list
 - [ ] **BORD-04**: User can click a card to open detail modal showing full description
@@ -148,7 +148,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04 | Phase 1: Foundation & Auth | Pending |
 | AUTH-05 | Phase 1: Foundation & Auth | Pending |
 | AUTH-06 | Phase 1: Foundation & Auth | Pending |
-| BORD-01 | Phase 2: Board Core | Pending |
+| BORD-01 | Phase 2: Board Core | Complete |
 | BORD-02 | Phase 2: Board Core | Pending |
 | BORD-03 | Phase 2: Board Core | Pending |
 | BORD-04 | Phase 2: Board Core | Pending |

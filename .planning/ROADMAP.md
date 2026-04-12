@@ -54,7 +54,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 02-01-PLAN.md — Frontend infrastructure: deps, shared types, Tailwind tokens, TanStack Query, Zustand, Socket.io client
+- [x] 02-01-PLAN.md — Frontend infrastructure: deps, shared types, Tailwind tokens, TanStack Query, Zustand, Socket.io client
 - [ ] 02-02-PLAN.md — Backend CRUD: BoardModule, REST API, fractional indexing, Socket.io broadcasting
 - [ ] 02-03-PLAN.md — Board UI: BoardPage, columns, cards, skeleton, connection status
 - [ ] 02-04-PLAN.md — CRUD interactions: list/card create/edit/delete, card detail modal, toast system
