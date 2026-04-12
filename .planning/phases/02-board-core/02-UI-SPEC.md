@@ -21,8 +21,8 @@ created: 2026-04-12
 | Preset | not applicable |
 | Component library | none (custom components) |
 | Icon library | Lucide React (lightweight, tree-shakeable, MIT) |
-| Font (display) | Space Grotesk 600, 700 |
-| Font (body) | DM Sans 400, 500 |
+| Font (display) | Space Grotesk 600 |
+| Font (body) | DM Sans 400 |
 | Font (meta) | JetBrains Mono 400 |
 
 **Source:** DESIGN.md (approved variant C)
@@ -37,16 +37,16 @@ Declared values (4px base unit per DESIGN.md):
 |-------|-------|---------------------|
 | space-1 | 4px | Icon gaps, inline label padding |
 | space-2 | 8px | Card-to-card gap, compact element spacing, button vertical padding |
-| space-3 | 12px | Card padding (vertical), column padding, column header padding |
+| space-3 | 12px | Card padding (vertical), column padding, column header padding. DESIGN.md override: not a multiple of 8, but declared in DESIGN.md spacing system |
 | space-4 | 16px | Card padding (horizontal), column-to-column gap, modal section gap, button horizontal padding |
-| space-5 | 20px | — (available but not primary in this phase) |
+| space-5 | 20px | DESIGN.md override: available but not primary in this phase |
 | space-6 | 24px | Board outer padding, modal padding |
 | space-8 | 32px | Layout-level gaps |
-| space-10 | 40px | — |
+| space-10 | 40px | DESIGN.md override: available but not primary in this phase |
 | space-12 | 48px | — |
 | space-16 | 64px | — |
 
-Exceptions: none
+Exceptions: space-3 (12px), space-5 (20px), and space-10 (40px) are not multiples of 8 but are declared in DESIGN.md's spacing system as part of the 4px base unit scale. Documented as DESIGN.md override.
 
 **Source:** DESIGN.md spacing system, component spacing table
 
@@ -54,17 +54,20 @@ Exceptions: none
 
 ## Typography
 
+4 sizes, 2 weights. Collapsed from DESIGN.md's full type scale to the minimum needed for this phase.
+
 | Role | Font | Size | Weight | Line Height | Usage in this phase |
 |------|------|------|--------|-------------|---------------------|
-| Display | Space Grotesk | 24px (1.5rem) | 700 | 1.25 | Board name in header |
-| Heading | Space Grotesk | 18px (1.125rem) | 600 | 1.25 | Column/list headers |
-| Body | DM Sans | 16px (1rem) | 500 | 1.5 | Card titles on board and in modal |
-| Body-sm | DM Sans | 14px (0.875rem) | 400 | 1.5 | Card description textarea, form labels, UI text |
-| Caption | DM Sans | 13px (0.8125rem) | 400 | 1.5 | Button text, input placeholders, toast text |
-| Meta | DM Sans | 12px (0.75rem) | 400 | 1.5 | Timestamps, card count badges, "created" date in modal |
-| Code | JetBrains Mono | 12px (0.75rem) | 400 | 1.5 | Connection status label |
+| Display | Space Grotesk | 24px (1.5rem) | 600 | 1.25 | Board name in header |
+| Heading | Space Grotesk | 18px (1.125rem) | 600 | 1.25 | Column/list headers, modal title |
+| Body | DM Sans | 14px (0.875rem) | 400 | 1.5 | Card titles, card description textarea, form labels, button text, toast title, toast body, UI text, breadcrumb text, input placeholders |
+| Meta | JetBrains Mono | 12px (0.75rem) | 400 | 1.5 | Timestamps, card count badges, connection status label, created date in modal, captions |
 
-**Source:** DESIGN.md type scale + component patterns
+**Weight policy:** Only 400 (regular) and 600 (semi-bold) are used. Space Grotesk uses 600 exclusively. DM Sans uses 400 exclusively. JetBrains Mono uses 400 exclusively. No 500 or 700 weights are loaded or referenced.
+
+**DESIGN.md mapping:** DESIGN.md declares sizes 12–32px and weights 400–700. This phase contract narrows to 4 sizes (12, 14, 18, 24) and 2 weights (400, 600) for visual hierarchy clarity. The full DESIGN.md scale remains available for future phases.
+
+**Source:** DESIGN.md type scale, constrained for Phase 2
 
 ---
 
@@ -120,14 +123,14 @@ Exceptions: none
 | Background | `--bg-surface` |
 | Border-bottom | 1px solid `--border-subtle` |
 | Layout | flex, space-between, items-center |
-| Left | Board name (Space Grotesk 700, 24px, `--text-primary`) |
+| Left | Board name (Space Grotesk 600, 24px, `--text-primary`) |
 | Right | Connection status indicator |
 
 **Connection Status Indicator:**
 - Green dot (`#34D399`, 8px circle) + "Connected" label — connected state
 - Yellow dot (`#FB923C`, 8px circle) + "Reconnecting..." label — reconnecting state
 - Red dot (`#F87171`, 8px circle) + "Disconnected" label — disconnected state
-- Label: DM Sans 400, 12px, `--text-muted`
+- Label: JetBrains Mono 400, 12px, `--text-muted`
 - Dot + label gap: 8px
 
 ### 2. ColumnContainer (List)
@@ -149,10 +152,10 @@ Exceptions: none
 - List name: Space Grotesk 600, 18px, `--text-primary`
 - Card count badge: JetBrains Mono 400, 12px, `--text-muted`
 - Name is inline-editable (click triggers edit mode)
-- Options menu: 3-dot icon button (ghost), opens dropdown with "Delete list"
+- Options menu: 3-dot icon button (ghost), `aria-label="List options"`, opens dropdown with "Delete list"
 
 **Column Footer:**
-- "Add a card" ghost button: DM Sans 500, 13px, `--text-muted`, hover: `--text-primary`
+- "Add a card" ghost button: DM Sans 400, 14px, `--text-muted`, hover: `--text-primary`
 - Icon: Plus (Lucide), 16px, same color as text
 - Padding: 8px 12px
 
@@ -168,13 +171,13 @@ Exceptions: none
 | Background | transparent |
 | Border | 1px dashed `--border-subtle` |
 | Border-radius | 12px |
-| Text | "+ Add List", DM Sans 500, 14px, `--text-muted` |
+| Text | "+ Add List", DM Sans 400, 14px, `--text-muted` |
 | Hover | border-color: `--accent`, text-color: `--accent` |
 | Click | Transforms into inline input + confirm/cancel buttons |
 
 **Inline Create Mode:**
 - Input: full width, `--bg-card` background, `--border-subtle` border, focus: `--accent` border
-- Buttons: "Add" primary (accent bg, dark text, 32px height), "Cancel" ghost
+- Buttons: "Add List" primary (accent bg, dark text, 32px height), "Cancel" ghost
 - Enter key: submit. Escape key: cancel.
 
 ### 4. CardItem
@@ -190,7 +193,7 @@ Exceptions: none
 
 **Card Content:**
 - Top stripe: 3px height, `coverColor` from card data, border-radius top corners only
-- Title: DM Sans 500, 16px, `--text-primary`, single line with text-overflow: ellipsis
+- Title: DM Sans 400, 14px, `--text-primary`, single line with text-overflow: ellipsis
 - No description preview, no avatars, no metadata on card face (D-01: minimal density)
 
 **Card Hover:**
@@ -247,13 +250,13 @@ Exceptions: none
 - Close: click overlay, Escape key, or X button
 
 **Modal Layout:**
-- Title: click-to-edit, Space Grotesk 600, 22px, `--text-primary`
+- Title: click-to-edit, Space Grotesk 600, 18px, `--text-primary`
 - Breadcrumb: "in List: {list name}", DM Sans 400, 14px, `--text-secondary`
-- Created date: DM Sans 400, 12px, `--text-muted`
+- Created date: JetBrains Mono 400, 12px, `--text-muted`
 - Sections gap: 16px
 
 **Description Section (Phase 2 — textarea placeholder):**
-- Label: "Description", DM Sans 500, 14px, `--text-secondary`
+- Label: "Description", DM Sans 400, 14px, `--text-secondary`
 - Textarea: full width, min-height 120px, `--bg-card` background, `--border-subtle` border
 - Placeholder: "Add a description..."
 - Focus: `--border-focus` border
@@ -261,9 +264,9 @@ Exceptions: none
 - Note: This textarea swaps to TipTap + Yjs editor in Phase 3. Container layout must not change.
 
 **Actions:**
-- Delete card: ghost button, `--accent-danger` text, Lucide Trash2 icon
-- Confirmation: inline "Are you sure? Delete / Cancel" replaces button on click
-- Close: X button (top-right), Lucide X icon, ghost style
+- Delete card: ghost button, `--accent-danger` text, Lucide Trash2 icon, `aria-label="Delete card"`
+- Confirmation: inline "Delete this card? This can't be undone." / "Delete Card" / "Cancel" replaces button on click
+- Close: X button (top-right), Lucide X icon, ghost style, `aria-label="Close modal"`
 
 **Modal Animation:**
 - Open: scale from 0.95 + fade in, 250ms, ease-spring
@@ -284,9 +287,9 @@ Exceptions: none
 | Auto-dismiss | 4 seconds |
 
 **Toast Content:**
-- Title: DM Sans 500, 14px, `--text-primary`
-- Body: DM Sans 400, 13px, `--text-secondary`
-- Close: X button, ghost, `--text-muted`
+- Title: DM Sans 400, 14px, `--text-primary`
+- Body: DM Sans 400, 14px, `--text-secondary`
+- Close: X button, ghost, `--text-muted`, `aria-label="Dismiss notification"`
 
 **Toast Animation:**
 - Enter: slide from right edge + fade in, 300ms, ease-out
@@ -371,12 +374,13 @@ Exceptions: none
 | Empty list body | "Click below to add your first card." |
 | Add card button | "+ Add a card" |
 | Add list button | "+ Add List" |
+| Add list confirm button | "Add List" |
 | Card detail: description placeholder | "Add a description..." |
 | Card detail: title placeholder | "Untitled card" |
 | List name placeholder (create) | "Enter list name..." |
 | Card title placeholder (create) | "Enter card title..." |
-| Delete card confirmation | "Delete this card? This can't be undone." / "Delete" / "Cancel" |
-| Delete list confirmation | "Delete this list and all its cards? This can't be undone." / "Delete" / "Cancel" |
+| Delete card confirmation | "Delete this card? This can't be undone." / "Delete Card" / "Cancel" |
+| Delete list confirmation | "Delete this list and all its cards? This can't be undone." / "Delete List" / "Cancel" |
 | Error: card move failed | "Card move failed. The card has been returned to its original position." |
 | Error: card create failed | "Couldn't create card. Please try again." |
 | Error: card delete failed | "Couldn't delete card. Please try again." |
@@ -423,6 +427,7 @@ Exceptions: none
 | Focus management | Modal traps focus. Escape closes modal. Focus returns to triggering card. |
 | Reduced motion | `prefers-reduced-motion: reduce` — disable card rotation during drag, disable spring physics (use linear transitions), disable layout stagger. Keep functional animations (opacity changes). |
 | Screen reader | Cards: `role="button"`, `aria-label="{card title}"`. Lists: `role="region"`, `aria-label="{list name}"`. Modal: `role="dialog"`, `aria-modal="true"`, `aria-labelledby="modal-title"`. Live regions for toast notifications: `role="status"`, `aria-live="polite"`. |
+| Icon-only actions | Column options (3-dot menu): `aria-label="List options"`. Modal close (X): `aria-label="Close modal"`. Toast dismiss (X): `aria-label="Dismiss notification"`. Delete card (Trash icon): `aria-label="Delete card"`. |
 
 ---
 
