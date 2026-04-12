@@ -20,6 +20,11 @@ export function CardDetailModal({ card, listName, boardId, onClose }: CardDetail
   const [description, setDescription] = useState(card.descriptionText ?? '');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // Sync local state when card prop changes (remote update via WebSocket)
+  useEffect(() => {
+    setDescription(card.descriptionText ?? '');
+  }, [card.descriptionText]);
+
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
