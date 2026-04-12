@@ -252,9 +252,14 @@ export function useMoveCard(boardId: string) {
       }
       addToast('error', 'Card move failed. The card has been returned to its original position.');
     },
-    onSuccess: (_data, vars) => {
-      inflightMoveCardIds.delete(vars.cardId);
-      queryClient.invalidateQueries({ queryKey: ['board', boardId] });
+    onSettled: (_data, _error, vars) => {
+      // Delay removal from in-flight set so the socket event guard
+      // still blocks the broadcast that arrives after the HTTP response.
+      // Without this delay, onSuccess removes the ID, then the socket
+      // event arrives and duplicates the card.
+      setTimeout(() => {
+        inflightMoveCardIds.delete(vars.cardId);
+      }, 3000);
     },
   });
 }
