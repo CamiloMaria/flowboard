@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { connectSocket, disconnectSocket } from '../lib/socket';
+import { connectSocket } from '../lib/socket';
 import { getQueryClient } from '../providers/QueryProvider';
 import { useBoardStore } from '../stores/board.store';
 import type {
@@ -167,7 +167,7 @@ export function useBoardSocket(boardId: string) {
     socket.on('list:update', onListUpdate);
     socket.on('list:delete', onListDelete);
 
-    // --- Cleanup ---
+    // --- Cleanup: leave room and remove listeners, but keep socket alive ---
     return () => {
       socket.emit('board:leave', { boardId });
       socket.off('connect', onConnect);
@@ -181,7 +181,7 @@ export function useBoardSocket(boardId: string) {
       socket.off('list:create', onListCreate);
       socket.off('list:update', onListUpdate);
       socket.off('list:delete', onListDelete);
-      disconnectSocket();
+      // Don't call disconnectSocket() — let socket persist across board navigations
     };
   }, [boardId]);
 }
