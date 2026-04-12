@@ -2,17 +2,14 @@ import { useParams } from 'react-router';
 import { AnimatePresence } from 'motion/react';
 import { useBoard } from '../hooks/useBoard';
 import { BoardHeader } from '../components/board/BoardHeader';
-import { ColumnContainer } from '../components/board/ColumnContainer';
+import { BoardCanvas } from '../components/board/BoardCanvas';
 import { BoardSkeleton } from '../components/board/BoardSkeleton';
-import { AddListGhost } from '../components/board/AddListGhost';
 import { CardDetailModal } from '../components/board/CardDetailModal';
-import { useCreateList } from '../hooks/useBoardMutations';
 import { useBoardStore } from '../stores/board.store';
 
 export function BoardPage() {
   const { boardId } = useParams<{ boardId: string }>();
   const { data: board, isLoading, error } = useBoard(boardId!);
-  const createList = useCreateList(boardId!);
   const selectedCardId = useBoardStore((s) => s.selectedCardId);
   const closeCard = useBoardStore((s) => s.closeCard);
 
@@ -36,17 +33,7 @@ export function BoardPage() {
   return (
     <div className="h-screen flex flex-col bg-bg-base">
       <BoardHeader name={board.name} />
-      <div
-        className="flex-1 overflow-x-auto overflow-y-hidden p-6 flex gap-4"
-        style={{ scrollbarWidth: 'none' }}
-      >
-        {board.lists
-          .sort((a, b) => a.position - b.position)
-          .map((list) => (
-            <ColumnContainer key={list.id} list={list} boardId={board.id} />
-          ))}
-        <AddListGhost onAdd={(name) => createList.mutate({ name })} />
-      </div>
+      <BoardCanvas board={board} />
 
       <AnimatePresence>
         {selectedCard && (

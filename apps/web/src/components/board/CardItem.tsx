@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { motion } from 'motion/react';
 import { useSortable } from '@dnd-kit/react/sortable';
 import type { Card } from '@flowboard/shared';
 import { InlineInput } from './InlineInput';
@@ -11,11 +12,18 @@ interface CardItemProps {
   onClick: () => void;
 }
 
+const layoutTransition = {
+  type: 'spring' as const,
+  stiffness: 200,
+  damping: 25,
+  mass: 0.8,
+};
+
 export function CardItem({ card, boardId, index, onClick }: CardItemProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const updateCard = useUpdateCard(boardId);
 
-  const { ref, isDragging } = useSortable({
+  const { ref: sortableRef, isDragging } = useSortable({
     id: card.id,
     index,
     data: { card, type: 'card' },
@@ -24,12 +32,24 @@ export function CardItem({ card, boardId, index, onClick }: CardItemProps) {
     group: card.listId,
   });
 
+  // Merge sortable ref with motion ref via callback
+  const mergedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (typeof sortableRef === 'function') {
+        sortableRef(node);
+      } else if (sortableRef && 'current' in sortableRef) {
+        (sortableRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }
+    },
+    [sortableRef],
+  );
+
   function handleTitleSave(newTitle: string) {
     updateCard.mutate({ id: card.id, title: newTitle });
     setIsEditingTitle(false);
   }
 
-  function handleCardClick(e: React.MouseEvent) {
+  function handleCardClick() {
     // Don't open modal if we're in edit mode or dragging
     if (isEditingTitle || isDragging) return;
     onClick();
@@ -41,8 +61,10 @@ export function CardItem({ card, boardId, index, onClick }: CardItemProps) {
   }
 
   return (
-    <div
-      ref={ref}
+    <motion.div
+      ref={mergedRef}
+      layout
+      transition={layoutTransition}
       role="button"
       aria-label={card.title}
       tabIndex={0}
@@ -89,6 +111,6 @@ export function CardItem({ card, boardId, index, onClick }: CardItemProps) {
           </p>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
