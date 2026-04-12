@@ -59,7 +59,7 @@ Plans:
 - [x] 02-03-PLAN.md — Board UI: BoardPage, columns, cards, skeleton, connection status
 - [x] 02-04-PLAN.md — CRUD interactions: list/card create/edit/delete, card detail modal, toast system
 - [x] 02-05-PLAN.md — Drag-and-drop: @dnd-kit integration, drag overlay, drop indicators, auto-scroll
-- [ ] 02-06-PLAN.md — Real-time sync: Socket.io events, cache updates, remote animations
+- [x] 02-06-PLAN.md — Real-time sync: Socket.io events, cache updates, remote animations
 
 ### Phase 3: Real-time Collaboration
 **Goal**: Multiple users can simultaneously edit card descriptions with character-level sync, see each other's cursors on the board, and know who's online
