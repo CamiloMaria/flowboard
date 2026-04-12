@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback } from 'react';
-import { move } from '@dnd-kit/helpers';
 import type { Card, BoardWithLists } from '@flowboard/shared';
 import { getQueryClient } from '../providers/QueryProvider';
 import { useMoveCard } from './useBoardMutations';
@@ -7,19 +6,6 @@ import { useMoveCard } from './useBoardMutations';
 interface DragState {
   activeCard: Card | null;
   activeCardOriginalListId: string | null;
-}
-
-/**
- * Builds a Record<listId, cardId[]> from the board for @dnd-kit's move helper.
- */
-function boardToItemsMap(board: BoardWithLists): Record<string, string[]> {
-  const map: Record<string, string[]> = {};
-  for (const list of board.lists) {
-    map[list.id] = [...list.cards]
-      .sort((a, b) => a.position - b.position)
-      .map((c) => c.id);
-  }
-  return map;
 }
 
 export function useBoardDnd(boardId: string) {
@@ -30,20 +16,14 @@ export function useBoardDnd(boardId: string) {
 
   const moveCard = useMoveCard(boardId);
   const snapshotRef = useRef<BoardWithLists | null>(null);
-  // Tracks the items map during drag for @dnd-kit move helper
-  const itemsMapRef = useRef<Record<string, string[]>>({});
 
   const onDragStart = useCallback(
     (event: { operation: { source: { data?: { card?: Card } } } }) => {
       const card = event.operation.source?.data?.card as Card | undefined;
       if (card) {
         const queryClient = getQueryClient();
-        const board =
+        snapshotRef.current =
           queryClient.getQueryData<BoardWithLists>(['board', boardId]) ?? null;
-        snapshotRef.current = board;
-        if (board) {
-          itemsMapRef.current = boardToItemsMap(board);
-        }
 
         setDragState({
           activeCard: card,
@@ -56,12 +36,11 @@ export function useBoardDnd(boardId: string) {
 
   const onDragOver = useCallback(
     (event: { operation: { source: { type?: string } } }) => {
+      // Let @dnd-kit handle visual reordering via CSS transforms.
+      // No state updates needed during drag — we resolve the final
+      // target in onDragEnd using source.group + target.id.
       const sourceType = event.operation.source?.type;
       if (sourceType === 'column') return;
-
-      // Use @dnd-kit/helpers move() to update items map during drag.
-      // This handles moving items into empty columns automatically.
-      itemsMapRef.current = move(itemsMapRef.current, event as any);
     },
     [],
   );
@@ -73,14 +52,15 @@ export function useBoardDnd(boardId: string) {
         source: {
           data?: { card?: Card };
           type?: string;
-          initialGroup?: string;
           group?: string;
-          initialIndex?: number;
           index?: number;
+        };
+        target?: {
+          id?: string | number;
         };
       };
     }) => {
-      const { source } = event.operation;
+      const { source, target } = event.operation;
       const card = source.data?.card as Card | undefined;
 
       // If drag was canceled, revert to snapshot
@@ -98,16 +78,30 @@ export function useBoardDnd(boardId: string) {
         return;
       }
 
-      // Determine target list from the items map (handles empty lists correctly)
-      let targetListId = card.listId;
-      let targetIndex = 0;
-      for (const [listId, cardIds] of Object.entries(itemsMapRef.current)) {
-        const idx = cardIds.indexOf(card.id);
-        if (idx !== -1) {
-          targetListId = listId;
-          targetIndex = idx;
-          break;
+      // Determine target list:
+      // 1. source.group — @dnd-kit updates this when the item enters a new sortable group
+      // 2. target.id — the droppable column ID (handles empty lists where no sortable items exist)
+      // 3. Fallback to original list
+      let targetListId = source.group as string | undefined;
+
+      // If source.group didn't change (no sortable items in target), check the droppable column
+      if ((!targetListId || targetListId === card.listId) && target?.id) {
+        const droppableId = String(target.id);
+        if (droppableId.startsWith('column-')) {
+          targetListId = droppableId.replace('column-', '');
         }
+      }
+
+      if (!targetListId) {
+        targetListId = card.listId;
+      }
+
+      const targetIndex = source.index ?? 0;
+
+      // Skip if card didn't actually move
+      if (targetListId === card.listId && targetIndex === 0 && !source.group) {
+        setDragState({ activeCard: null, activeCardOriginalListId: null });
+        return;
       }
 
       // Read current board state from cache to calculate fractional position
@@ -117,7 +111,6 @@ export function useBoardDnd(boardId: string) {
       if (board) {
         const targetList = board.lists.find((l) => l.id === targetListId);
         if (targetList) {
-          // Get sorted cards in the target list, excluding the dragged card
           const otherCards = [...targetList.cards]
             .filter((c) => c.id !== card.id)
             .sort((a, b) => a.position - b.position);
@@ -136,10 +129,9 @@ export function useBoardDnd(boardId: string) {
             newPosition = (prevCard.position + nextCard.position) / 2;
           }
 
-          // Fire the move mutation (optimistic update + server sync)
           moveCard.mutate({
             cardId: card.id,
-            targetListId,
+            targetListId: targetListId!,
             newPosition,
           });
         }

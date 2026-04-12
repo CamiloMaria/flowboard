@@ -210,60 +210,18 @@ export function useMoveCard(boardId: string) {
         targetListId: vars.targetListId,
         newPosition: vars.newPosition,
       }),
-    onMutate: async (vars) => {
+    onMutate: (vars) => {
       inflightMoveCardIds.add(vars.cardId);
-      await queryClient.cancelQueries({ queryKey: ['board', boardId] });
-      const previous = queryClient.getQueryData<BoardWithLists>(['board', boardId]);
-
-      // Optimistic: update card's listId and position in cache
-      queryClient.setQueryData<BoardWithLists>(['board', boardId], (old) => {
-        if (!old) return old;
-
-        // Remove the card from ALL lists first (prevents duplicates)
-        let movedCard: Card | undefined;
-        const listsWithoutCard = old.lists.map((l) => {
-          const found = l.cards.find((c) => c.id === vars.cardId);
-          if (found && !movedCard) {
-            movedCard = { ...found, listId: vars.targetListId, position: vars.newPosition };
-          }
-          return { ...l, cards: l.cards.filter((c) => c.id !== vars.cardId) };
-        });
-
-        if (!movedCard) return old;
-
-        // Add card to target list, then deduplicate by ID as a safety net
-        const updated = listsWithoutCard.map((l) => {
-          if (l.id === vars.targetListId) {
-            const cards = [...l.cards, movedCard!];
-            // Deduplicate: keep only the last occurrence of each card ID
-            const seen = new Set<string>();
-            const deduped = cards.filter((c) => {
-              if (seen.has(c.id)) return false;
-              seen.add(c.id);
-              return true;
-            });
-            return { ...l, cards: deduped };
-          }
-          return l;
-        });
-
-        return { ...old, lists: updated };
-      });
-
-      return { previous };
     },
-    onError: (_err, vars, context) => {
+    onError: (_err, vars) => {
       inflightMoveCardIds.delete(vars.cardId);
-      if (context?.previous) {
-        queryClient.setQueryData(['board', boardId], context.previous);
-      }
       addToast('error', 'Card move failed. The card has been returned to its original position.');
     },
-    onSettled: (_data, _error, vars) => {
-      // Delay removal from in-flight set so the socket event guard
-      // still blocks the broadcast that arrives after the HTTP response.
-      // Without this delay, onSuccess removes the ID, then the socket
-      // event arrives and duplicates the card.
+    onSuccess: (_data, vars) => {
+      // Refetch board to get server-authoritative state
+      queryClient.invalidateQueries({ queryKey: ['board', boardId] });
+      // Delay clearing in-flight flag so socket event guard still blocks
+      // the broadcast that may arrive after the HTTP response
       setTimeout(() => {
         inflightMoveCardIds.delete(vars.cardId);
       }, 3000);
