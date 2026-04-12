@@ -105,6 +105,24 @@ export class BoardGateway implements OnGatewayInit, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return;
 
+    // WR-01: Validate cursor coordinates
+    if (
+      typeof data.x !== 'number' ||
+      typeof data.y !== 'number' ||
+      !Number.isFinite(data.x) ||
+      !Number.isFinite(data.y)
+    ) {
+      return;
+    }
+
+    // WR-02: Only allow cursor events for the board the user joined
+    const joinedBoardId = (client as any).boardId;
+    if (data.boardId !== joinedBoardId) return;
+
+    // Clamp to reasonable bounds (0-10000)
+    const x = Math.max(0, Math.min(10000, data.x));
+    const y = Math.max(0, Math.min(10000, data.y));
+
     this.broadcastToBoard(
       data.boardId,
       'presence:cursor',
@@ -112,8 +130,8 @@ export class BoardGateway implements OnGatewayInit, OnGatewayDisconnect {
         userId: user.sub,
         name: user.name ?? 'Anonymous',
         color: user.color ?? '#22D3EE',
-        x: data.x,
-        y: data.y,
+        x,
+        y,
         boardId: data.boardId,
       },
       client.id,
