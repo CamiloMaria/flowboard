@@ -35,13 +35,24 @@ function EmptyListDropZone({ listId }: { listId: string }) {
 interface ColumnContainerProps {
   list: ListWithCards;
   boardId: string;
+  cardsById: Record<string, import('@flowboard/shared').Card>;
+  getCardIdsForList: (listId: string) => string[] | null;
 }
 
-export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
-  const sortedCards = useMemo(
-    () => [...list.cards].sort((a, b) => a.position - b.position),
-    [list.cards],
-  );
+export function ColumnContainer({ list, boardId, cardsById, getCardIdsForList }: ColumnContainerProps) {
+  // During drag: render cards from DnD local state (keeps @dnd-kit in sync with DOM).
+  // Not dragging: render from cache data as usual.
+  const dndCardIds = getCardIdsForList(list.id);
+  const sortedCards = useMemo(() => {
+    if (dndCardIds) {
+      // Drag in progress — use DnD-ordered card IDs
+      return dndCardIds
+        .map((id) => cardsById[id])
+        .filter(Boolean) as import('@flowboard/shared').Card[];
+    }
+    // Normal rendering from cache
+    return [...list.cards].sort((a, b) => a.position - b.position);
+  }, [dndCardIds, cardsById, list.cards]);
   const reducedMotion = useReducedMotion();
 
   const updateList = useUpdateList(boardId);

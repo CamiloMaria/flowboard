@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
+import { move } from '@dnd-kit/helpers';
 import type { Card, BoardWithLists } from '@flowboard/shared';
 import { getQueryClient } from '../providers/QueryProvider';
 import { useMoveCard } from './useBoardMutations';
@@ -8,23 +9,65 @@ interface DragState {
   activeCardOriginalListId: string | null;
 }
 
-export function useBoardDnd(boardId: string) {
+/**
+ * Converts board data into the Record<listId, cardId[]> format
+ * that @dnd-kit/helpers move() expects.
+ */
+function boardToItemsMap(board: BoardWithLists): Record<string, string[]> {
+  const map: Record<string, string[]> = {};
+  for (const list of board.lists) {
+    map[list.id] = [...list.cards]
+      .sort((a, b) => a.position - b.position)
+      .map((c) => c.id);
+  }
+  return map;
+}
+
+/**
+ * Builds a flat lookup of all cards by ID from the board data.
+ */
+function buildCardsById(board: BoardWithLists): Record<string, Card> {
+  const map: Record<string, Card> = {};
+  for (const list of board.lists) {
+    for (const card of list.cards) {
+      map[card.id] = card;
+    }
+  }
+  return map;
+}
+
+export function useBoardDnd(boardId: string, board: BoardWithLists | undefined) {
   const [dragState, setDragState] = useState<DragState>({
     activeCard: null,
     activeCardOriginalListId: null,
   });
 
+  // Local React state for card positions during drag.
+  // @dnd-kit/react 0.3.x REQUIRES onDragOver to update React state
+  // so its internal sort tracking matches the rendered DOM.
+  // null = not dragging, use board data as-is.
+  const [itemsMap, setItemsMap] = useState<Record<string, string[]> | null>(null);
+
   const moveCard = useMoveCard(boardId);
   const snapshotRef = useRef<BoardWithLists | null>(null);
 
+  // Flat card lookup for rendering cards by ID
+  const cardsById = useMemo(
+    () => (board ? buildCardsById(board) : {}),
+    [board],
+  );
+
   const onDragStart = useCallback(
-    (event: Parameters<NonNullable<React.ComponentProps<typeof import('@dnd-kit/react').DragDropProvider>['onDragStart']>>[0]) => {
+    (event: any) => {
       const source = event.operation.source;
-      const card = (source?.data as any)?.card as Card | undefined;
-      if (card) {
+      const card = source?.data?.card as Card | undefined;
+      if (card && board) {
         const queryClient = getQueryClient();
         snapshotRef.current =
           queryClient.getQueryData<BoardWithLists>(['board', boardId]) ?? null;
+
+        // Initialize local items map from current board state
+        setItemsMap(boardToItemsMap(board));
 
         setDragState({
           activeCard: card,
@@ -32,21 +75,30 @@ export function useBoardDnd(boardId: string) {
         });
       }
     },
-    [boardId],
+    [boardId, board],
   );
 
   const onDragOver = useCallback(
-    (event: Parameters<NonNullable<React.ComponentProps<typeof import('@dnd-kit/react').DragDropProvider>['onDragOver']>>[0]) => {
+    (event: any) => {
       const source = event.operation.source;
       if (source?.type === 'column') return;
+
+      // Update local React state with @dnd-kit/helpers move().
+      // This re-renders cards in their new groups, keeping
+      // @dnd-kit's internal state in sync with the DOM.
+      setItemsMap((current) => (current ? move(current, event) : current));
     },
     [],
   );
 
   const onDragEnd = useCallback(
-    (event: Parameters<NonNullable<React.ComponentProps<typeof import('@dnd-kit/react').DragDropProvider>['onDragEnd']>>[0]) => {
+    (event: any) => {
       const { source, target } = event.operation;
-      const card = (source?.data as any)?.card as Card | undefined;
+      const card = source?.data?.card as Card | undefined;
+
+      // Clear the local DnD state — rendering returns to cache data
+      const currentItemsMap = itemsMap;
+      setItemsMap(null);
 
       if (event.canceled) {
         if (snapshotRef.current) {
@@ -62,17 +114,27 @@ export function useBoardDnd(boardId: string) {
         return;
       }
 
-      // Determine target list:
-      // 1. source.group — @dnd-kit updates this when the item enters a new sortable group
-      // 2. target.id — the droppable column ID (handles empty lists)
-      // 3. Fallback to original list
-      const sourceAny = source as any;
-      let targetListId = sourceAny.group as string | undefined;
+      // Find where the card ended up in the items map
+      let targetListId: string | undefined;
+      let targetIndex = 0;
 
-      if ((!targetListId || targetListId === card.listId) && target?.id) {
+      if (currentItemsMap) {
+        for (const [listId, cardIds] of Object.entries(currentItemsMap)) {
+          const idx = cardIds.indexOf(card.id);
+          if (idx !== -1) {
+            targetListId = listId;
+            targetIndex = idx;
+            break;
+          }
+        }
+      }
+
+      // Fallback: check droppable column (for empty lists)
+      if (!targetListId && target?.id) {
         const droppableId = String(target.id);
         if (droppableId.startsWith('column-')) {
           targetListId = droppableId.replace('column-', '');
+          targetIndex = 0;
         }
       }
 
@@ -80,18 +142,12 @@ export function useBoardDnd(boardId: string) {
         targetListId = card.listId;
       }
 
-      const targetIndex: number = sourceAny.index ?? 0;
-
-      if (targetListId === card.listId && targetIndex === 0 && !sourceAny.group) {
-        setDragState({ activeCard: null, activeCardOriginalListId: null });
-        return;
-      }
-
+      // Read current board state to calculate fractional position
       const queryClient = getQueryClient();
-      const board = queryClient.getQueryData<BoardWithLists>(['board', boardId]);
+      const currentBoard = queryClient.getQueryData<BoardWithLists>(['board', boardId]);
 
-      if (board) {
-        const targetList = board.lists.find((l) => l.id === targetListId);
+      if (currentBoard) {
+        const targetList = currentBoard.lists.find((l) => l.id === targetListId);
         if (targetList) {
           const otherCards = [...targetList.cards]
             .filter((c) => c.id !== card.id)
@@ -121,12 +177,27 @@ export function useBoardDnd(boardId: string) {
 
       setDragState({ activeCard: null, activeCardOriginalListId: null });
     },
-    [boardId, moveCard],
+    [boardId, moveCard, itemsMap],
+  );
+
+  /**
+   * Returns the card IDs for a given list, respecting DnD state.
+   * During drag: uses the local items map (updated by onDragOver).
+   * Not dragging: returns null (caller uses cache data).
+   */
+  const getCardIdsForList = useCallback(
+    (listId: string): string[] | null => {
+      if (!itemsMap) return null;
+      return itemsMap[listId] ?? [];
+    },
+    [itemsMap],
   );
 
   return {
     activeCard: dragState.activeCard,
     activeCardOriginalListId: dragState.activeCardOriginalListId,
+    cardsById,
+    getCardIdsForList,
     onDragStart,
     onDragOver,
     onDragEnd,

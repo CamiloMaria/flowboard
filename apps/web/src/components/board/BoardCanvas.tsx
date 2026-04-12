@@ -17,9 +17,14 @@ const EDGE_ZONE = 60;
 const MAX_SPEED = 15;
 
 export function BoardCanvas({ board }: BoardCanvasProps) {
-  const { activeCard, onDragStart, onDragOver, onDragEnd } = useBoardDnd(
-    board.id,
-  );
+  const {
+    activeCard,
+    cardsById,
+    getCardIdsForList,
+    onDragStart,
+    onDragOver,
+    onDragEnd,
+  } = useBoardDnd(board.id, board);
   const createList = useCreateList(board.id);
   const reducedMotion = useReducedMotion();
   const boardRef = useRef<HTMLDivElement>(null);
@@ -81,7 +86,12 @@ export function BoardCanvas({ board }: BoardCanvasProps) {
                       }
                 }
               >
-                <ColumnContainer list={list} boardId={board.id} />
+                <ColumnContainer
+                  list={list}
+                  boardId={board.id}
+                  cardsById={cardsById}
+                  getCardIdsForList={getCardIdsForList}
+                />
               </motion.div>
             ))}
         </AnimatePresence>
