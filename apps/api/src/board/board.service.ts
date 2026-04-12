@@ -102,6 +102,14 @@ export class BoardService {
     });
   }
 
+  async getCardById(cardId: string) {
+    const card = await this.prisma.card.findUnique({ where: { id: cardId } });
+    if (!card) {
+      throw new NotFoundException(`Card ${cardId} not found`);
+    }
+    return card;
+  }
+
   async updateCard(cardId: string, dto: UpdateCardDto) {
     const card = await this.prisma.card.findUnique({ where: { id: cardId } });
     if (!card) {

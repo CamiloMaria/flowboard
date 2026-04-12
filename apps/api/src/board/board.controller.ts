@@ -105,9 +105,12 @@ export class BoardController {
     @Param('cardId') cardId: string,
     @Body() dto: MoveCardDto,
   ) {
+    const fromCard = await this.boardService.getCardById(cardId);
+    const fromListId = fromCard.listId;
     const result = await this.boardService.moveCard(cardId, dto);
     this.boardGateway.broadcastToBoard(boardId, 'card:move', {
       cardId,
+      fromListId,
       toListId: dto.targetListId,
       newPosition: dto.newPosition,
       card: result,
