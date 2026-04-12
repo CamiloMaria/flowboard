@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useDroppable } from '@dnd-kit/react';
 import { Plus, MoreHorizontal } from 'lucide-react';
 import type { ListWithCards } from '@flowboard/shared';
@@ -6,6 +7,7 @@ import { CardItem } from './CardItem';
 import { InlineInput } from './InlineInput';
 import { useBoardStore } from '../../stores/board.store';
 import { useUpdateList, useDeleteList, useCreateCard } from '../../hooks/useBoardMutations';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 interface ColumnContainerProps {
   list: ListWithCards;
@@ -14,6 +16,7 @@ interface ColumnContainerProps {
 
 export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
   const sortedCards = [...list.cards].sort((a, b) => a.position - b.position);
+  const reducedMotion = useReducedMotion();
 
   const updateList = useUpdateList(boardId);
   const deleteList = useDeleteList(boardId);
@@ -164,15 +167,33 @@ export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
             </p>
           </div>
         ) : (
-          sortedCards.map((card, index) => (
-            <CardItem
-              key={card.id}
-              card={card}
-              boardId={boardId}
-              index={index}
-              onClick={() => useBoardStore.getState().openCard(card.id)}
-            />
-          ))
+          <AnimatePresence mode="popLayout">
+            {sortedCards.map((card, index) => (
+              <motion.div
+                key={card.id}
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={
+                  reducedMotion
+                    ? { duration: 0 }
+                    : {
+                        layout: { type: 'spring', stiffness: 200, damping: 25, mass: 0.8 },
+                        opacity: { duration: 0.25 },
+                        scale: { duration: 0.25 },
+                      }
+                }
+              >
+                <CardItem
+                  card={card}
+                  boardId={boardId}
+                  index={index}
+                  onClick={() => useBoardStore.getState().openCard(card.id)}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         )}
       </div>
 

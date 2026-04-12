@@ -1,6 +1,7 @@
 import { useParams } from 'react-router';
 import { AnimatePresence } from 'motion/react';
 import { useBoard } from '../hooks/useBoard';
+import { useBoardSocket } from '../hooks/useBoardSocket';
 import { BoardHeader } from '../components/board/BoardHeader';
 import { BoardCanvas } from '../components/board/BoardCanvas';
 import { BoardSkeleton } from '../components/board/BoardSkeleton';
@@ -10,6 +11,9 @@ import { useBoardStore } from '../stores/board.store';
 export function BoardPage() {
   const { boardId } = useParams<{ boardId: string }>();
   const { data: board, isLoading, error } = useBoard(boardId!);
+
+  // Connect to Socket.io board room — handles all real-time events (D-13, D-16)
+  useBoardSocket(boardId!);
   const selectedCardId = useBoardStore((s) => s.selectedCardId);
   const closeCard = useBoardStore((s) => s.closeCard);
 
