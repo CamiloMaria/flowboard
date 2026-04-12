@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 02-06-PLAN.md
-last_updated: "2026-04-12T15:27:09.872Z"
+stopped_at: Completed 02-07-PLAN.md
+last_updated: "2026-04-12T16:30:23.639Z"
 last_activity: 2026-04-12
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 12
-  completed_plans: 12
+  total_plans: 13
+  completed_plans: 13
   percent: 100
 ---
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02 P04 | 5min | 2 tasks | 12 files |
 | Phase 02 P05 | 4min | 2 tasks | 7 files |
 | Phase 02 P06 | 3min | 2 tasks | 5 files |
+| Phase 02 P07 | 4min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,9 @@ Recent decisions affecting current work:
 - [Phase 02]: motion.div layout with spring(200,25,0.8) for card reorder animation prep for remote sync
 - [Phase 02]: Socket.io Manager-level events (socket.io.on) for reconnect — socket instance only fires connect/disconnect
 - [Phase 02]: AnimatePresence mode=popLayout for card create/delete + useReducedMotion for accessibility
+- [Phase 02]: X-Socket-Id header round-trip for broadcast exclusion prevents optimistic+broadcast card duplication
+- [Phase 02]: Success-only invalidation (onSuccess not onSettled) for all TanStack Query mutations prevents cascading error state
+- [Phase 02]: Disabled useSortable placeholder registers @dnd-kit group for empty lists as valid drop targets
 
 ### Pending Todos
 
@@ -101,6 +105,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-12T14:44:33.142Z
-Stopped at: Completed 02-06-PLAN.md
+Last session: 2026-04-12T16:30:23.637Z
+Stopped at: Completed 02-07-PLAN.md
 Resume file: None
