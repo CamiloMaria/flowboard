@@ -30,7 +30,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can register, log in, and access a protected endpoint with valid JWT
   4. Visiting `/demo` route auto-assigns a guest JWT with random name/color without creating a DB row
   5. Database migrations run cleanly and create users, boards, lists, cards tables
-**Plans**: TBD
+**Plans:** 6 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Monorepo scaffold with Turborepo, pnpm, Docker Compose, shared types
+- [ ] 01-02-PLAN.md — Prisma 7 schema, PrismaModule, RedisModule, DB push
+- [ ] 01-03-PLAN.md — React frontend shell with Tailwind v4, routing, API helper
+- [ ] 01-04-PLAN.md — Dual WebSocket spike (Socket.io + y-websocket coexistence)
+- [ ] 01-05-PLAN.md — JWT auth: register, login, refresh rotation, guards, WS middleware
+- [ ] 01-06-PLAN.md — Guest JWT flow and demo board seed script
 
 ### Phase 2: Board Core
 **Goal**: Users can view, create, edit, and reorganize cards across lists with drag-and-drop, with all changes broadcast to connected clients in real-time
@@ -90,7 +98,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 0/TBD | Not started | - |
+| 1. Foundation & Auth | 0/6 | Planning complete | - |
 | 2. Board Core | 0/TBD | Not started | - |
 | 3. Real-time Collaboration | 0/TBD | Not started | - |
 | 4. Demo Mode & Polish | 0/TBD | Not started | - |
