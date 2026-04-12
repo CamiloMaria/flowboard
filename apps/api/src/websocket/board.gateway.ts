@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { createWsAuthMiddleware } from '../auth/ws-auth.middleware';
+import { PresenceService } from '../presence/presence.service';
 
 @WebSocketGateway({
   cors: { origin: process.env.CORS_ORIGIN || 'http://localhost:5173', credentials: true },
@@ -19,20 +20,57 @@ export class BoardGateway implements OnGatewayInit, OnGatewayDisconnect {
   @WebSocketServer()
   server!: Server;
 
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly presenceService: PresenceService,
+  ) {}
 
   afterInit(server: Server) {
     server.use(createWsAuthMiddleware(this.jwtService));
   }
 
   @SubscribeMessage('board:join')
-  handleJoinBoard(
+  async handleJoinBoard(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { boardId: string },
-  ): void {
+  ): Promise<void> {
     client.join(`board:${data.boardId}`);
-    // Store boardId on socket for cleanup on disconnect
+    // Store boardId and user on socket for cleanup on disconnect
     (client as any).boardId = data.boardId;
+
+    const user = client.data.user;
+    if (user) {
+      (client as any).user = user;
+
+      // Register in Redis presence
+      await this.presenceService.setOnline(user.sub, data.boardId, {
+        userId: user.sub,
+        name: user.name ?? 'Anonymous',
+        color: user.color ?? '#22D3EE',
+        role: user.role ?? 'user',
+      });
+
+      // Broadcast join to room (excluding sender)
+      this.broadcastToBoard(
+        data.boardId,
+        'presence:join',
+        {
+          user: {
+            userId: user.sub,
+            name: user.name ?? 'Anonymous',
+            color: user.color ?? '#22D3EE',
+            role: user.role ?? 'user',
+          },
+          boardId: data.boardId,
+        },
+        client.id,
+      );
+
+      // Send current online users list to the joining client
+      const onlineUsers =
+        await this.presenceService.getOnlineUsers(data.boardId);
+      client.emit('presence:users', { users: onlineUsers });
+    }
   }
 
   @SubscribeMessage('board:leave')
@@ -43,10 +81,52 @@ export class BoardGateway implements OnGatewayInit, OnGatewayDisconnect {
     client.leave(`board:${data.boardId}`);
   }
 
-  handleDisconnect(client: Socket): void {
+  async handleDisconnect(client: Socket): Promise<void> {
     const boardId = (client as any).boardId;
     if (boardId) {
       client.leave(`board:${boardId}`);
+
+      const user = (client as any).user ?? client.data.user;
+      if (user) {
+        await this.presenceService.setOffline(user.sub, boardId);
+        this.broadcastToBoard(boardId, 'presence:leave', {
+          userId: user.sub,
+          boardId,
+        });
+      }
+    }
+  }
+
+  @SubscribeMessage('presence:cursor')
+  handleCursor(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { x: number; y: number; boardId: string },
+  ): void {
+    const user = client.data.user;
+    if (!user) return;
+
+    this.broadcastToBoard(
+      data.boardId,
+      'presence:cursor',
+      {
+        userId: user.sub,
+        name: user.name ?? 'Anonymous',
+        color: user.color ?? '#22D3EE',
+        x: data.x,
+        y: data.y,
+        boardId: data.boardId,
+      },
+      client.id,
+    );
+  }
+
+  @SubscribeMessage('presence:heartbeat')
+  async handleHeartbeat(
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    const boardId = (client as any).boardId;
+    if (boardId) {
+      await this.presenceService.refreshHeartbeat(boardId);
     }
   }
 
