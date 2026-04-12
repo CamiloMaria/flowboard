@@ -12,14 +12,13 @@ A recruiter opens the URL and sees live collaboration (colored cursors, simultan
 
 ### Validated
 
-(None yet -- ship to validate)
+- [x] Monorepo scaffold (Turborepo + pnpm workspaces, NestJS API, Vite React frontend, shared types) — Validated in Phase 1: foundation-auth
+- [x] Dual WebSocket integration (Socket.io on `/socket.io/` + y-websocket on `/yjs/`) — Validated in Phase 1: foundation-auth
+- [x] Database schema (PostgreSQL + Prisma: users, boards, lists, cards) — Validated in Phase 1: foundation-auth
+- [x] JWT auth (register, login, refresh tokens, guards, guest user flow for demo) — Validated in Phase 1: foundation-auth
 
 ### Active
 
-- [ ] Monorepo scaffold (Turborepo + pnpm workspaces, NestJS API, Vite React frontend, shared types)
-- [ ] Dual WebSocket integration (Socket.io on `/socket.io/` + y-websocket on `/yjs/`)
-- [ ] Database schema (PostgreSQL + Prisma: users, boards, lists, cards)
-- [ ] JWT auth (register, login, refresh tokens, guards, guest user flow for demo)
 - [ ] Board/list/card CRUD (REST API, seed demo board with 5 lists and 17 cards)
 - [ ] Yjs collaborative editing (TipTap editor, y-websocket sync, persistence on disconnect + 30s debounce)
 - [ ] Presence system (Redis-backed heartbeats, cursor broadcasting, online user avatars)
@@ -65,9 +64,9 @@ A recruiter opens the URL and sees live collaboration (colored cursors, simultan
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Approach B: "Full-Stack Demo" over minimal or maximal approaches | Balances wow-factor with shipping speed; auth proves backend capability; demo proves real-time magic | -- Pending |
-| Dual WebSocket (Socket.io + y-websocket) on same HTTP server | Clear responsibility boundary; Socket.io for board sync, y-websocket for CRDT editing; separate paths avoid conflict | -- Pending |
-| Prisma over TypeORM | Better type safety, cleaner migrations, more readable schema | -- Pending |
+| Approach B: "Full-Stack Demo" over minimal or maximal approaches | Balances wow-factor with shipping speed; auth proves backend capability; demo proves real-time magic | Validated (Phase 1) |
+| Dual WebSocket (Socket.io + y-websocket) on same HTTP server | Clear responsibility boundary; Socket.io for board sync, y-websocket for CRDT editing; separate paths avoid conflict | Validated (Phase 1 — E2E spike passed) |
+| Prisma over TypeORM | Better type safety, cleaner migrations, more readable schema | Validated (Phase 1) |
 | FLOAT fractional indexing over string-based keys | Simpler implementation, standard SQL ordering, rebalancing handles precision limits | -- Pending |
 | Server-side bots (direct service calls) over WebSocket-connected bots | No connection limits, no auth setup, deterministic actions, simpler implementation | -- Pending |
 | Shared demo board over per-recruiter boards | Avoids N bot processes; 0-5 concurrent visitors doesn't justify per-recruiter complexity | -- Pending |
@@ -91,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-11 after initialization*
+*Last updated: 2026-04-12 after Phase 1 (foundation-auth) completion*
