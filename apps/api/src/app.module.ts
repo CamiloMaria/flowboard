@@ -8,6 +8,7 @@ import { RedisModule } from './redis/redis.module';
 import { WebSocketModule } from './websocket/websocket.module';
 import { AuthModule } from './auth/auth.module';
 import { BoardModule } from './board/board.module';
+import { CollabModule } from './collab/collab.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
@@ -20,6 +21,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     WebSocketModule,
     AuthModule,
     BoardModule,
+    CollabModule,
   ],
   controllers: [AppController],
   providers: [

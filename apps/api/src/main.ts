@@ -6,6 +6,8 @@ import {
   createYjsWebSocketServer,
   setupDualWebSocket,
 } from './websocket/yjs.setup';
+import { flushAllDirtyDocs } from './collab/yjs-persistence';
+import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,8 +33,17 @@ async function bootstrap() {
 
   // Wire dual WebSocket upgrade dispatcher AFTER init, BEFORE listen
   // per Pitfall 2: NestJS IoAdapter creates Socket.io server during init
-  const yjsWss = createYjsWebSocketServer();
+  const prisma = app.get(PrismaService);
+  const yjsWss = createYjsWebSocketServer(prisma);
   setupDualWebSocket(app, yjsWss);
+
+  // Flush dirty Yjs documents on shutdown to prevent data loss
+  const shutdownHandler = () => {
+    new Logger('Bootstrap').log('Flushing dirty Yjs documents before shutdown...');
+    flushAllDirtyDocs();
+  };
+  process.on('SIGTERM', shutdownHandler);
+  process.on('SIGINT', shutdownHandler);
 
   const port = process.env.PORT ?? 3001;
   await app.listen(port);

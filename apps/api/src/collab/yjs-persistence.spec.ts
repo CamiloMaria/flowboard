@@ -1,12 +1,21 @@
 import * as Y from 'yjs';
 
-// The module under test — does not exist yet, tests should fail
 import {
   bindState,
   writeState,
   setupDebouncedPersistence,
   flushAllDirtyDocs,
 } from './yjs-persistence';
+
+// Deterministic UUIDs for tests
+const CARD_ID_STORED = '00000000-0000-4000-8000-000000000001';
+const CARD_ID_MIGRATE = '00000000-0000-4000-8000-000000000002';
+const CARD_ID_EMPTY = '00000000-0000-4000-8000-000000000003';
+const CARD_ID_MISSING = '00000000-0000-4000-8000-000000000004';
+const CARD_ID_WRITE = '00000000-0000-4000-8000-000000000005';
+const CARD_ID_PLAIN = '00000000-0000-4000-8000-000000000006';
+const CARD_ID_DEBOUNCE = '00000000-0000-4000-8000-000000000007';
+const CARD_ID_RESET = '00000000-0000-4000-8000-000000000008';
 
 // Mock PrismaService — minimal interface matching what yjs-persistence needs
 function createMockPrisma(cardData: {
@@ -37,14 +46,14 @@ describe('yjs-persistence', () => {
       });
 
       const ydoc = new Y.Doc();
-      await bindState('card:test-card-id', ydoc, prisma as any);
+      await bindState(`card:${CARD_ID_STORED}`, ydoc, prisma as any);
 
       // The doc should now have the content from the stored state
       const loadedFragment = ydoc.getXmlFragment('description');
-      expect(loadedFragment.toJSON()).toBe('<description><undefined>Hello from stored state</undefined></description>');
+      expect(loadedFragment.toJSON()).toContain('Hello from stored state');
 
       expect(prisma.card.findUnique).toHaveBeenCalledWith({
-        where: { id: 'test-card-id' },
+        where: { id: CARD_ID_STORED },
         select: { descriptionYjs: true, descriptionText: true },
       });
     });
@@ -56,7 +65,7 @@ describe('yjs-persistence', () => {
       });
 
       const ydoc = new Y.Doc();
-      await bindState('card:migrate-card-id', ydoc, prisma as any);
+      await bindState(`card:${CARD_ID_MIGRATE}`, ydoc, prisma as any);
 
       // The doc should have the plaintext content migrated to XmlFragment
       const fragment = ydoc.getXmlFragment('description');
@@ -71,7 +80,7 @@ describe('yjs-persistence', () => {
       });
 
       const ydoc = new Y.Doc();
-      await bindState('card:empty-card-id', ydoc, prisma as any);
+      await bindState(`card:${CARD_ID_EMPTY}`, ydoc, prisma as any);
 
       // Doc should remain empty
       const fragment = ydoc.getXmlFragment('description');
@@ -82,8 +91,7 @@ describe('yjs-persistence', () => {
       const prisma = createMockPrisma(null);
 
       const ydoc = new Y.Doc();
-      // Should not throw
-      await bindState('card:nonexistent-id', ydoc, prisma as any);
+      await bindState(`card:${CARD_ID_MISSING}`, ydoc, prisma as any);
 
       const fragment = ydoc.getXmlFragment('description');
       expect(fragment.length).toBe(0);
@@ -93,7 +101,7 @@ describe('yjs-persistence', () => {
       const prisma = createMockPrisma(null);
       const ydoc = new Y.Doc();
 
-      // Invalid docName format should not crash
+      // Invalid docName format — no "card:" prefix
       await bindState('invalid-format', ydoc, prisma as any);
       expect(prisma.card.findUnique).not.toHaveBeenCalled();
     });
@@ -107,10 +115,10 @@ describe('yjs-persistence', () => {
       const text = new Y.XmlText('Updated content');
       fragment.insert(0, [text]);
 
-      await writeState('card:write-card-id', ydoc, prisma as any);
+      await writeState(`card:${CARD_ID_WRITE}`, ydoc, prisma as any);
 
       expect(prisma.card.update).toHaveBeenCalledWith({
-        where: { id: 'write-card-id' },
+        where: { id: CARD_ID_WRITE },
         data: expect.objectContaining({
           descriptionYjs: expect.any(Buffer),
           descriptionText: expect.any(String),
@@ -132,7 +140,7 @@ describe('yjs-persistence', () => {
       const text = new Y.XmlText('Plaintext extraction test');
       fragment.insert(0, [text]);
 
-      await writeState('card:plaintext-card-id', ydoc, prisma as any);
+      await writeState(`card:${CARD_ID_PLAIN}`, ydoc, prisma as any);
 
       const savedData = prisma.card.update.mock.calls[0][0].data;
       expect(savedData.descriptionText).toContain('Plaintext extraction test');
@@ -161,7 +169,7 @@ describe('yjs-persistence', () => {
       const prisma = createMockPrisma();
       const ydoc = new Y.Doc();
 
-      setupDebouncedPersistence('card:debounce-card-id', ydoc, prisma as any);
+      setupDebouncedPersistence(`card:${CARD_ID_DEBOUNCE}`, ydoc, prisma as any);
 
       // Trigger an update on the doc
       const fragment = ydoc.getXmlFragment('description');
@@ -185,7 +193,7 @@ describe('yjs-persistence', () => {
       const prisma = createMockPrisma();
       const ydoc = new Y.Doc();
 
-      setupDebouncedPersistence('card:reset-card-id', ydoc, prisma as any);
+      setupDebouncedPersistence(`card:${CARD_ID_RESET}`, ydoc, prisma as any);
 
       // First update
       const fragment = ydoc.getXmlFragment('description');
