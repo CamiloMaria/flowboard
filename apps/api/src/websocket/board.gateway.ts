@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { createWsAuthMiddleware } from '../auth/ws-auth.middleware';
 
 @WebSocketGateway({
-  cors: { origin: 'http://localhost:5173', credentials: true },
+  cors: { origin: process.env.CORS_ORIGIN || 'http://localhost:5173', credentials: true },
   transports: ['websocket'],
 })
 export class BoardGateway implements OnGatewayInit {
