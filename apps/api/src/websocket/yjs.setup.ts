@@ -118,7 +118,9 @@ async function setupWSConnection(
   // Handle incoming messages from client
   ws.on('message', (data: ArrayBuffer | Buffer) => {
     try {
-      const message = new Uint8Array(data instanceof ArrayBuffer ? data : data.buffer);
+      const message = data instanceof ArrayBuffer
+        ? new Uint8Array(data)
+        : new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
       const decoder = decoding.createDecoder(message);
       const messageType = decoding.readVarUint(decoder);
 
