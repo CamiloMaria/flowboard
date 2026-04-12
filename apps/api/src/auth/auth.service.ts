@@ -133,6 +133,22 @@ export class AuthService {
   }
 
   /**
+   * Remove expired and old revoked refresh tokens.
+   * Call periodically (e.g., via @nestjs/schedule Cron) to prevent unbounded table growth.
+   */
+  async cleanupExpiredTokens(): Promise<number> {
+    const result = await this.prisma.refreshToken.deleteMany({
+      where: {
+        OR: [
+          { expiresAt: { lt: new Date() } },
+          { revoked: true, createdAt: { lt: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+        ],
+      },
+    });
+    return result.count;
+  }
+
+  /**
    * Generate a guest JWT for anonymous demo board access.
    * No database row created — per D-11, guests are ephemeral.
    * Uses same JWT_SECRET as regular tokens per D-12.
