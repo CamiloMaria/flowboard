@@ -25,6 +25,17 @@ const docs = new Map<string, Y.Doc>();
 const awarenessMap = new Map<string, awarenessProtocol.Awareness>();
 const docConnections = new Map<string, Set<WebSocket>>();
 
+/**
+ * WR-04: Cleanup function for testing and HMR.
+ * Destroys all Y.Doc instances and clears module-level state maps.
+ */
+export function clearDocStore(): void {
+  for (const [, doc] of docs) doc.destroy();
+  docs.clear();
+  awarenessMap.clear();
+  docConnections.clear();
+}
+
 function getYDoc(docName: string): Y.Doc {
   let doc = docs.get(docName);
   if (!doc) {
