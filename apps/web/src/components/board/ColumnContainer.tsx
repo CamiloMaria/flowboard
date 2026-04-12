@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { motion } from 'motion/react';
 import { useDroppable } from '@dnd-kit/react';
 import { useSortable } from '@dnd-kit/react/sortable';
 import { Plus, MoreHorizontal } from 'lucide-react';
@@ -188,33 +188,28 @@ export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
         {sortedCards.length === 0 ? (
           <EmptyListDropZone listId={list.id} />
         ) : (
-          <AnimatePresence mode="popLayout">
-            {sortedCards.map((card, index) => (
-              <motion.div
-                key={card.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={
-                  reducedMotion
-                    ? { duration: 0 }
-                    : {
-                        layout: { type: 'spring', stiffness: 200, damping: 25, mass: 0.8 },
-                        opacity: { duration: 0.25 },
-                        scale: { duration: 0.25 },
-                      }
-                }
-              >
-                <CardItem
-                  card={card}
-                  boardId={boardId}
-                  index={index}
-                  onClick={() => useBoardStore.getState().openCard(card.id)}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          sortedCards.map((card, index) => (
+            <motion.div
+              key={card.id}
+              layout
+              initial={false}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={
+                reducedMotion
+                  ? { duration: 0 }
+                  : {
+                      layout: { type: 'spring', stiffness: 200, damping: 25, mass: 0.8 },
+                    }
+              }
+            >
+              <CardItem
+                card={card}
+                boardId={boardId}
+                index={index}
+                onClick={() => useBoardStore.getState().openCard(card.id)}
+              />
+            </motion.div>
+          ))
         )}
       </div>
 
