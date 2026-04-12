@@ -12,13 +12,16 @@ interface DragState {
 /**
  * Converts board data into the Record<listId, cardId[]> format
  * that @dnd-kit/helpers move() expects.
+ * Empty lists get a placeholder ID so move() recognizes the group
+ * as a valid drop target.
  */
 function boardToItemsMap(board: BoardWithLists): Record<string, string[]> {
   const map: Record<string, string[]> = {};
   for (const list of board.lists) {
-    map[list.id] = [...list.cards]
+    const cardIds = [...list.cards]
       .sort((a, b) => a.position - b.position)
       .map((c) => c.id);
+    map[list.id] = cardIds.length > 0 ? cardIds : [`placeholder-${list.id}`];
   }
   return map;
 }
@@ -129,12 +132,16 @@ export function useBoardDnd(boardId: string, board: BoardWithLists | undefined) 
         }
       }
 
-      // Fallback: check droppable column (for empty lists)
-      if (!targetListId && target?.id) {
+      // Fallback: check droppable column (for empty lists or if move() didn't change the group)
+      if (target?.id) {
         const droppableId = String(target.id);
         if (droppableId.startsWith('column-')) {
-          targetListId = droppableId.replace('column-', '');
-          targetIndex = 0;
+          const droppableListId = droppableId.replace('column-', '');
+          // Use droppable target if card is still in its original list (move() didn't regroup it)
+          if (!targetListId || targetListId === card.listId) {
+            targetListId = droppableListId;
+            targetIndex = 0;
+          }
         }
       }
 
