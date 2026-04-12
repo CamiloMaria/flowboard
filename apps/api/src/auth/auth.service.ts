@@ -101,6 +101,13 @@ export class AuthService {
       where: { token: oldRefreshToken },
     });
     if (!stored || stored.revoked) {
+      // Potential token theft — revoke ALL tokens for this user (RFC 6819)
+      if (stored?.userId) {
+        await this.prisma.refreshToken.updateMany({
+          where: { userId: stored.userId, revoked: false },
+          data: { revoked: true },
+        });
+      }
       throw new UnauthorizedException('Token revoked');
     }
 
