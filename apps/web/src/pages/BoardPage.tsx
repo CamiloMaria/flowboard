@@ -17,8 +17,9 @@ export function BoardPage() {
   const selectedCardId = useBoardStore((s) => s.selectedCardId);
   const closeCard = useBoardStore((s) => s.closeCard);
 
-  if (isLoading) return <BoardSkeleton />;
-  if (error || !board) return <div className="p-6 text-accent-danger">Failed to load board</div>;
+  if (isLoading && !board) return <BoardSkeleton />;
+  if (error && !board) return <div className="p-6 text-accent-danger">Failed to load board</div>;
+  if (!board) return <div className="p-6 text-accent-danger">Failed to load board</div>;
 
   // Find selected card and its list name
   let selectedCard = null;

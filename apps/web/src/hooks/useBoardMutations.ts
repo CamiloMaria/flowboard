@@ -37,7 +37,7 @@ export function useCreateList(boardId: string) {
       }
       addToast('error', "Couldn't create list. Please try again.");
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
     },
   });
@@ -70,7 +70,7 @@ export function useUpdateList(boardId: string) {
       }
       addToast('error', "Changes couldn't be saved. Please try again.");
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
     },
   });
@@ -98,7 +98,7 @@ export function useDeleteList(boardId: string) {
       }
       addToast('error', "Couldn't delete list. Please try again.");
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
     },
   });
@@ -144,7 +144,7 @@ export function useCreateCard(boardId: string) {
       }
       addToast('error', "Couldn't create card. Please try again.");
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
     },
   });
@@ -182,7 +182,7 @@ export function useUpdateCard(boardId: string) {
       }
       addToast('error', "Changes couldn't be saved. Please try again.");
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
     },
   });
@@ -238,7 +238,7 @@ export function useMoveCard(boardId: string) {
       }
       addToast('error', 'Card move failed. The card has been returned to its original position.');
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
     },
   });
@@ -272,7 +272,7 @@ export function useDeleteCard(boardId: string) {
       }
       addToast('error', "Couldn't delete card. Please try again.");
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
     },
   });
