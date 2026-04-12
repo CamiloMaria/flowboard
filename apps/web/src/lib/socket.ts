@@ -8,6 +8,12 @@ let socket: Socket | null = null;
 export function connectSocket(): Socket {
   if (socket?.connected) return socket;
 
+  // Clean up any existing disconnected socket before creating a new one
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+
   socket = io(SOCKET_URL, {
     transports: ['websocket', 'polling'],
     auth: { token: getAccessToken() },
