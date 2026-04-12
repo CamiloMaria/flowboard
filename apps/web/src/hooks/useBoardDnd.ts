@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { move } from '@dnd-kit/helpers';
 import type { Card, BoardWithLists } from '@flowboard/shared';
 import { getQueryClient } from '../providers/QueryProvider';
 import { useMoveCard } from './useBoardMutations';
@@ -6,6 +7,19 @@ import { useMoveCard } from './useBoardMutations';
 interface DragState {
   activeCard: Card | null;
   activeCardOriginalListId: string | null;
+}
+
+/**
+ * Builds a Record<listId, cardId[]> from the board for @dnd-kit's move helper.
+ */
+function boardToItemsMap(board: BoardWithLists): Record<string, string[]> {
+  const map: Record<string, string[]> = {};
+  for (const list of board.lists) {
+    map[list.id] = [...list.cards]
+      .sort((a, b) => a.position - b.position)
+      .map((c) => c.id);
+  }
+  return map;
 }
 
 export function useBoardDnd(boardId: string) {
@@ -16,15 +30,20 @@ export function useBoardDnd(boardId: string) {
 
   const moveCard = useMoveCard(boardId);
   const snapshotRef = useRef<BoardWithLists | null>(null);
+  // Tracks the items map during drag for @dnd-kit move helper
+  const itemsMapRef = useRef<Record<string, string[]>>({});
 
   const onDragStart = useCallback(
     (event: { operation: { source: { data?: { card?: Card } } } }) => {
       const card = event.operation.source?.data?.card as Card | undefined;
       if (card) {
-        // Snapshot board state before drag for revert on cancel
         const queryClient = getQueryClient();
-        snapshotRef.current =
+        const board =
           queryClient.getQueryData<BoardWithLists>(['board', boardId]) ?? null;
+        snapshotRef.current = board;
+        if (board) {
+          itemsMapRef.current = boardToItemsMap(board);
+        }
 
         setDragState({
           activeCard: card,
@@ -37,12 +56,12 @@ export function useBoardDnd(boardId: string) {
 
   const onDragOver = useCallback(
     (event: { operation: { source: { type?: string } } }) => {
-      // @dnd-kit/react handles optimistic visual reordering via its sorting plugins.
-      // For cross-list moves, the `group` prop on useSortable handles the visual transfer.
-      // We only need to prevent column-type sources from triggering item moves.
       const sourceType = event.operation.source?.type;
       if (sourceType === 'column') return;
-      // Visual reordering is handled by @dnd-kit's internal optimistic sorting.
+
+      // Use @dnd-kit/helpers move() to update items map during drag.
+      // This handles moving items into empty columns automatically.
+      itemsMapRef.current = move(itemsMapRef.current, event as any);
     },
     [],
   );
@@ -79,9 +98,17 @@ export function useBoardDnd(boardId: string) {
         return;
       }
 
-      // Determine target list and position from the source's final group/index
-      const targetListId = (source.group as string) ?? card.listId;
-      const targetIndex = source.index ?? 0;
+      // Determine target list from the items map (handles empty lists correctly)
+      let targetListId = card.listId;
+      let targetIndex = 0;
+      for (const [listId, cardIds] of Object.entries(itemsMapRef.current)) {
+        const idx = cardIds.indexOf(card.id);
+        if (idx !== -1) {
+          targetListId = listId;
+          targetIndex = idx;
+          break;
+        }
+      }
 
       // Read current board state from cache to calculate fractional position
       const queryClient = getQueryClient();
@@ -98,16 +125,12 @@ export function useBoardDnd(boardId: string) {
           let newPosition: number;
 
           if (otherCards.length === 0) {
-            // Empty list or only card
             newPosition = 1000;
           } else if (targetIndex === 0) {
-            // Dropping at start
             newPosition = otherCards[0].position / 2;
           } else if (targetIndex >= otherCards.length) {
-            // Dropping at end
             newPosition = otherCards[otherCards.length - 1].position + 1000;
           } else {
-            // Dropping between two cards
             const prevCard = otherCards[targetIndex - 1];
             const nextCard = otherCards[targetIndex];
             newPosition = (prevCard.position + nextCard.position) / 2;

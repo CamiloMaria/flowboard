@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { connectSocket } from '../lib/socket';
 import { getQueryClient } from '../providers/QueryProvider';
 import { useBoardStore } from '../stores/board.store';
+import { isCardMoveInflight } from './useBoardMutations';
 import type {
   BoardWithLists,
   CardMovePayload,
@@ -61,6 +62,10 @@ export function useBoardSocket(boardId: string) {
     // --- Board event handlers (D-13: apply changes directly to TanStack Query cache) ---
 
     const onCardMove = (payload: CardMovePayload) => {
+      // Skip if this client initiated the move (prevents duplication
+      // from optimistic update + socket broadcast arriving together)
+      if (isCardMoveInflight(payload.cardId)) return;
+
       queryClient.setQueryData<BoardWithLists>(['board', boardId], (old) => {
         if (!old) return old;
         // Remove card from all lists (handles cross-list moves)

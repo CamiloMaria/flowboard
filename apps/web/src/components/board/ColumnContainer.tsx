@@ -10,20 +10,19 @@ import { useBoardStore } from '../../stores/board.store';
 import { useUpdateList, useDeleteList, useCreateCard } from '../../hooks/useBoardMutations';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
-function EmptyListPlaceholder({ listId }: { listId: string }) {
+function EmptyListDropZone({ listId }: { listId: string }) {
   const { ref } = useSortable({
     id: `placeholder-${listId}`,
     index: 0,
     type: 'item',
     accept: 'item',
     group: listId,
-    disabled: true,
   });
 
   return (
     <div
       ref={ref}
-      className="flex flex-col items-center justify-center py-8 text-center min-h-[80px]"
+      className="flex flex-col items-center justify-center py-8 text-center min-h-[80px] pointer-events-none"
     >
       <p className="font-body text-sm text-text-secondary">No cards yet</p>
       <p className="font-body text-xs text-text-muted mt-1">
@@ -187,7 +186,7 @@ export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
         style={{ maxHeight: 'calc(100vh - 160px)' }}
       >
         {sortedCards.length === 0 ? (
-          <EmptyListPlaceholder listId={list.id} />
+          <EmptyListDropZone listId={list.id} />
         ) : (
           <AnimatePresence mode="popLayout">
             {sortedCards.map((card, index) => (

@@ -4,6 +4,18 @@ import { getQueryClient } from '../providers/QueryProvider';
 import { useToast } from '../components/ui/ToastProvider';
 import type { BoardWithLists, List, Card } from '@flowboard/shared';
 
+/**
+ * Tracks card IDs with in-flight move mutations.
+ * Socket event handlers check this to skip events for cards
+ * being moved by THIS client (prevents duplication from
+ * optimistic update + server broadcast arriving together).
+ */
+const inflightMoveCardIds = new Set<string>();
+
+export function isCardMoveInflight(cardId: string): boolean {
+  return inflightMoveCardIds.has(cardId);
+}
+
 // --- List mutations ---
 
 export function useCreateList(boardId: string) {
@@ -199,6 +211,7 @@ export function useMoveCard(boardId: string) {
         newPosition: vars.newPosition,
       }),
     onMutate: async (vars) => {
+      inflightMoveCardIds.add(vars.cardId);
       await queryClient.cancelQueries({ queryKey: ['board', boardId] });
       const previous = queryClient.getQueryData<BoardWithLists>(['board', boardId]);
 
@@ -232,13 +245,15 @@ export function useMoveCard(boardId: string) {
 
       return { previous };
     },
-    onError: (_err, _vars, context) => {
+    onError: (_err, vars, context) => {
+      inflightMoveCardIds.delete(vars.cardId);
       if (context?.previous) {
         queryClient.setQueryData(['board', boardId], context.previous);
       }
       addToast('error', 'Card move failed. The card has been returned to its original position.');
     },
-    onSuccess: () => {
+    onSuccess: (_data, vars) => {
+      inflightMoveCardIds.delete(vars.cardId);
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
     },
   });
