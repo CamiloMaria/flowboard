@@ -50,8 +50,16 @@ Plans:
   3. User can drag cards within and across lists with a ghost overlay, and cards land in correct position immediately (optimistic update)
   4. Failed drag operations revert with animation and show a toast notification
   5. In a second browser tab, card moves appear in real-time via Socket.io broadcast with smooth animation
-**Plans**: TBD
+**Plans:** 6 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 02-01-PLAN.md — Frontend infrastructure: deps, shared types, Tailwind tokens, TanStack Query, Zustand, Socket.io client
+- [ ] 02-02-PLAN.md — Backend CRUD: BoardModule, REST API, fractional indexing, Socket.io broadcasting
+- [ ] 02-03-PLAN.md — Board UI: BoardPage, columns, cards, skeleton, connection status
+- [ ] 02-04-PLAN.md — CRUD interactions: list/card create/edit/delete, card detail modal, toast system
+- [ ] 02-05-PLAN.md — Drag-and-drop: @dnd-kit integration, drag overlay, drop indicators, auto-scroll
+- [ ] 02-06-PLAN.md — Real-time sync: Socket.io events, cache updates, remote animations
 
 ### Phase 3: Real-time Collaboration
 **Goal**: Multiple users can simultaneously edit card descriptions with character-level sync, see each other's cursors on the board, and know who's online
