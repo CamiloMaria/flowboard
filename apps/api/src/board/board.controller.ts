@@ -47,7 +47,7 @@ export class BoardController {
     @Param('listId') listId: string,
     @Body() dto: UpdateListDto,
   ) {
-    const list = await this.boardService.updateList(listId, dto);
+    const list = await this.boardService.updateList(boardId, listId, dto);
     this.boardGateway.broadcastToBoard(boardId, 'list:update', { list });
     return list;
   }
@@ -58,7 +58,7 @@ export class BoardController {
     @Param('boardId') boardId: string,
     @Param('listId') listId: string,
   ) {
-    await this.boardService.deleteList(listId);
+    await this.boardService.deleteList(boardId, listId);
     this.boardGateway.broadcastToBoard(boardId, 'list:delete', { listId });
   }
 

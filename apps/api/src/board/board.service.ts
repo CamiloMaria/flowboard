@@ -55,10 +55,13 @@ export class BoardService {
     });
   }
 
-  async updateList(listId: string, dto: UpdateListDto) {
+  async updateList(boardId: string, listId: string, dto: UpdateListDto) {
     const list = await this.prisma.list.findUnique({ where: { id: listId } });
     if (!list) {
       throw new NotFoundException(`List ${listId} not found`);
+    }
+    if (list.boardId !== boardId) {
+      throw new NotFoundException(`List ${listId} not found in board ${boardId}`);
     }
 
     return this.prisma.list.update({
@@ -67,10 +70,13 @@ export class BoardService {
     });
   }
 
-  async deleteList(listId: string) {
+  async deleteList(boardId: string, listId: string) {
     const list = await this.prisma.list.findUnique({ where: { id: listId } });
     if (!list) {
       throw new NotFoundException(`List ${listId} not found`);
+    }
+    if (list.boardId !== boardId) {
+      throw new NotFoundException(`List ${listId} not found in board ${boardId}`);
     }
 
     // Cards cascade via Prisma schema onDelete: Cascade
