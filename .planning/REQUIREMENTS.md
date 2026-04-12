@@ -136,13 +136,71 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (Populated by roadmapper) | | |
+| FNDN-01 | Phase 1: Foundation & Auth | Pending |
+| FNDN-02 | Phase 1: Foundation & Auth | Pending |
+| FNDN-03 | Phase 1: Foundation & Auth | Pending |
+| FNDN-04 | Phase 1: Foundation & Auth | Pending |
+| FNDN-05 | Phase 1: Foundation & Auth | Pending |
+| FNDN-06 | Phase 1: Foundation & Auth | Pending |
+| AUTH-01 | Phase 1: Foundation & Auth | Pending |
+| AUTH-02 | Phase 1: Foundation & Auth | Pending |
+| AUTH-03 | Phase 1: Foundation & Auth | Pending |
+| AUTH-04 | Phase 1: Foundation & Auth | Pending |
+| AUTH-05 | Phase 1: Foundation & Auth | Pending |
+| AUTH-06 | Phase 1: Foundation & Auth | Pending |
+| BORD-01 | Phase 2: Board Core | Pending |
+| BORD-02 | Phase 2: Board Core | Pending |
+| BORD-03 | Phase 2: Board Core | Pending |
+| BORD-04 | Phase 2: Board Core | Pending |
+| BORD-05 | Phase 2: Board Core | Pending |
+| BORD-06 | Phase 2: Board Core | Pending |
+| BORD-07 | Phase 2: Board Core | Pending |
+| BORD-08 | Phase 2: Board Core | Pending |
+| BORD-09 | Phase 2: Board Core | Pending |
+| DND-01 | Phase 2: Board Core | Pending |
+| DND-02 | Phase 2: Board Core | Pending |
+| DND-03 | Phase 2: Board Core | Pending |
+| DND-04 | Phase 2: Board Core | Pending |
+| DND-05 | Phase 2: Board Core | Pending |
+| DND-06 | Phase 2: Board Core | Pending |
+| COLLAB-01 | Phase 3: Real-time Collaboration | Pending |
+| COLLAB-02 | Phase 3: Real-time Collaboration | Pending |
+| COLLAB-03 | Phase 3: Real-time Collaboration | Pending |
+| COLLAB-04 | Phase 3: Real-time Collaboration | Pending |
+| COLLAB-05 | Phase 3: Real-time Collaboration | Pending |
+| COLLAB-06 | Phase 3: Real-time Collaboration | Pending |
+| PRES-01 | Phase 3: Real-time Collaboration | Pending |
+| PRES-02 | Phase 3: Real-time Collaboration | Pending |
+| PRES-03 | Phase 3: Real-time Collaboration | Pending |
+| PRES-04 | Phase 3: Real-time Collaboration | Pending |
+| PRES-05 | Phase 3: Real-time Collaboration | Pending |
+| PRES-06 | Phase 3: Real-time Collaboration | Pending |
+| DEMO-01 | Phase 4: Demo Mode & Polish | Pending |
+| DEMO-02 | Phase 4: Demo Mode & Polish | Pending |
+| DEMO-03 | Phase 4: Demo Mode & Polish | Pending |
+| DEMO-04 | Phase 4: Demo Mode & Polish | Pending |
+| DEMO-05 | Phase 4: Demo Mode & Polish | Pending |
+| DEMO-06 | Phase 4: Demo Mode & Polish | Pending |
+| PLSH-01 | Phase 4: Demo Mode & Polish | Pending |
+| PLSH-02 | Phase 4: Demo Mode & Polish | Pending |
+| PLSH-03 | Phase 4: Demo Mode & Polish | Pending |
+| PLSH-04 | Phase 4: Demo Mode & Polish | Pending |
+| PLSH-05 | Phase 4: Demo Mode & Polish | Pending |
+| PLSH-06 | Phase 4: Demo Mode & Polish | Pending |
+| PLSH-07 | Phase 4: Demo Mode & Polish | Pending |
+| DPLY-01 | Phase 5: Deploy & Documentation | Pending |
+| DPLY-02 | Phase 5: Deploy & Documentation | Pending |
+| DPLY-03 | Phase 5: Deploy & Documentation | Pending |
+| DPLY-04 | Phase 5: Deploy & Documentation | Pending |
+| DPLY-05 | Phase 5: Deploy & Documentation | Pending |
+| DPLY-06 | Phase 5: Deploy & Documentation | Pending |
+| DPLY-07 | Phase 5: Deploy & Documentation | Pending |
 
 **Coverage:**
-- v1 requirements: 43 total
-- Mapped to phases: 0
-- Unmapped: 43
+- v1 requirements: 59 total
+- Mapped to phases: 59
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-11*
-*Last updated: 2026-04-11 after initial definition*
+*Last updated: 2026-04-11 after roadmap creation*
