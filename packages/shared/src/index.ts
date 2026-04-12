@@ -22,4 +22,13 @@ export type {
 
 export type { WsEventType, WsEventMap } from './ws-events.types';
 
+export type {
+  OnlineUser,
+  CursorPosition,
+  PresenceCursorPayload,
+  PresenceJoinPayload,
+  PresenceLeavePayload,
+  CoEditorInfo,
+} from './presence.types';
+
 export { USER_COLORS, BOT_COLORS, GUEST_COLORS } from './colors';

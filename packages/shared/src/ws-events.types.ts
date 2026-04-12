@@ -7,6 +7,11 @@ import type {
   ListUpdatePayload,
   ListDeletePayload,
 } from './board.types';
+import type {
+  PresenceCursorPayload,
+  PresenceJoinPayload,
+  PresenceLeavePayload,
+} from './presence.types';
 
 export type WsEventType =
   | 'board:join'
@@ -32,4 +37,7 @@ export interface WsEventMap {
   'list:create': ListCreatePayload;
   'list:update': ListUpdatePayload;
   'list:delete': ListDeletePayload;
+  'presence:cursor': PresenceCursorPayload;
+  'presence:join': PresenceJoinPayload;
+  'presence:leave': PresenceLeavePayload;
 }

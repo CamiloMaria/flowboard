@@ -171,9 +171,30 @@ describe('Composite board types', () => {
         },
       },
       'list:delete': { listId: 'list-1' },
+      'presence:cursor': {
+        userId: 'user-1',
+        name: 'Alice',
+        color: '#22D3EE',
+        x: 100,
+        y: 200,
+        boardId: 'board-1',
+      },
+      'presence:join': {
+        user: {
+          userId: 'user-1',
+          name: 'Alice',
+          color: '#22D3EE',
+          role: 'user',
+        },
+        boardId: 'board-1',
+      },
+      'presence:leave': {
+        userId: 'user-1',
+        boardId: 'board-1',
+      },
     };
 
-    expect(Object.keys(eventMap)).toHaveLength(9);
+    expect(Object.keys(eventMap)).toHaveLength(12);
     expect(eventMap['card:move'].cardId).toBe('card-1');
     expect(eventMap['card:create'].card.id).toBe('card-1');
     expect(eventMap['list:delete'].listId).toBe('list-1');
