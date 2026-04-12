@@ -66,7 +66,9 @@ export class BoardService {
 
     return this.prisma.list.update({
       where: { id: listId },
-      data: { ...dto },
+      data: {
+        ...(dto.name !== undefined && { name: dto.name }),
+      },
     });
   }
 
@@ -124,7 +126,10 @@ export class BoardService {
 
     return this.prisma.card.update({
       where: { id: cardId },
-      data: { ...dto },
+      data: {
+        ...(dto.title !== undefined && { title: dto.title }),
+        ...(dto.descriptionText !== undefined && { descriptionText: dto.descriptionText }),
+      },
     });
   }
 
