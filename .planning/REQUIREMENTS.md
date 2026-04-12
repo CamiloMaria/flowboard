@@ -39,11 +39,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Drag and Drop
 
-- [ ] **DND-01**: User can drag cards to reorder within the same list
-- [ ] **DND-02**: User can drag cards across lists (e.g., To Do -> In Progress)
-- [ ] **DND-03**: Drag overlay (ghost card) follows cursor during drag with lift effect (scale + shadow)
+- [x] **DND-01**: User can drag cards to reorder within the same list
+- [x] **DND-02**: User can drag cards across lists (e.g., To Do -> In Progress)
+- [x] **DND-03**: Drag overlay (ghost card) follows cursor during drag with lift effect (scale + shadow)
 - [x] **DND-04**: Card appears in new position immediately (optimistic update), syncs to server async
-- [ ] **DND-05**: Failed move reverts card to original position with ease-out animation and toast notification
+- [x] **DND-05**: Failed move reverts card to original position with ease-out animation and toast notification
 - [x] **DND-06**: Remote card moves broadcast via Socket.io — all connected clients see card animate to new position in real-time
 
 ### Collaborative Editing
@@ -157,11 +157,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BORD-07 | Phase 2: Board Core | Complete |
 | BORD-08 | Phase 2: Board Core | Complete |
 | BORD-09 | Phase 2: Board Core | Complete |
-| DND-01 | Phase 2: Board Core | Pending |
-| DND-02 | Phase 2: Board Core | Pending |
-| DND-03 | Phase 2: Board Core | Pending |
+| DND-01 | Phase 2: Board Core | Complete |
+| DND-02 | Phase 2: Board Core | Complete |
+| DND-03 | Phase 2: Board Core | Complete |
 | DND-04 | Phase 2: Board Core | Complete |
-| DND-05 | Phase 2: Board Core | Pending |
+| DND-05 | Phase 2: Board Core | Complete |
 | DND-06 | Phase 2: Board Core | Complete |
 | COLLAB-01 | Phase 3: Real-time Collaboration | Pending |
 | COLLAB-02 | Phase 3: Real-time Collaboration | Pending |

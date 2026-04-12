@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-04-PLAN.md
-last_updated: "2026-04-12T14:30:22.590Z"
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-04-12T14:38:48.851Z"
 last_activity: 2026-04-12
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 10
-  percent: 83
+  completed_plans: 11
+  percent: 92
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 02 (board-core) — EXECUTING
-Plan: 5 of 6
+Plan: 6 of 6
 Status: Ready to execute
 Last activity: 2026-04-12
 
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02 P02 | 6min | 2 tasks | 11 files |
 | Phase 02 P03 | 3min | 2 tasks | 8 files |
 | Phase 02 P04 | 5min | 2 tasks | 12 files |
+| Phase 02 P05 | 4min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,9 @@ Recent decisions affecting current work:
 - [Phase 02]: Click-to-edit pattern for inline title editing (D-08 agent discretion)
 - [Phase 02]: Description textarea auto-saves on blur, matching future TipTap pattern
 - [Phase 02]: apiPatch added to api.ts for PATCH HTTP method (was missing)
+- [Phase 02]: @dnd-kit/react 0.3.x: useSortable with group prop for cross-list, DragOverlay for ghost card
+- [Phase 02]: Fractional position calc: start=first/2, end=last+1000, between=midpoint (client-side)
+- [Phase 02]: motion.div layout with spring(200,25,0.8) for card reorder animation prep for remote sync
 
 ### Pending Todos
 
@@ -93,6 +97,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-12T14:30:22.589Z
-Stopped at: Completed 02-04-PLAN.md
+Last session: 2026-04-12T14:38:48.850Z
+Stopped at: Completed 02-05-PLAN.md
 Resume file: None

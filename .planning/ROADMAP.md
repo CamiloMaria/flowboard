@@ -58,7 +58,7 @@ Plans:
 - [x] 02-02-PLAN.md — Backend CRUD: BoardModule, REST API, fractional indexing, Socket.io broadcasting
 - [x] 02-03-PLAN.md — Board UI: BoardPage, columns, cards, skeleton, connection status
 - [x] 02-04-PLAN.md — CRUD interactions: list/card create/edit/delete, card detail modal, toast system
-- [ ] 02-05-PLAN.md — Drag-and-drop: @dnd-kit integration, drag overlay, drop indicators, auto-scroll
+- [x] 02-05-PLAN.md — Drag-and-drop: @dnd-kit integration, drag overlay, drop indicators, auto-scroll
 - [ ] 02-06-PLAN.md — Real-time sync: Socket.io events, cache updates, remote animations
 
 ### Phase 3: Real-time Collaboration
