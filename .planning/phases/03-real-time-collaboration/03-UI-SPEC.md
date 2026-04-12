@@ -5,6 +5,7 @@ status: draft
 shadcn_initialized: false
 preset: none
 created: 2026-04-12
+revised: 2026-04-12
 ---
 
 # Phase 3 — UI Design Contract
@@ -33,8 +34,8 @@ Declared values (multiples of 4, per DESIGN.md `--space-*` tokens):
 
 | Token | Value | Usage in Phase 3 |
 |-------|-------|-------------------|
-| xs | 4px | Cursor name pill padding, avatar overlap offset |
-| sm | 8px | Avatar group gap, editor toolbar gaps, cursor label offset |
+| xs | 4px | Cursor name pill vertical padding, avatar overlap offset, inline code vertical padding, floating toolbar button gap |
+| sm | 8px | Avatar group gap, editor toolbar gaps, cursor label offset, cursor name pill horizontal padding |
 | md | 16px | Editor section padding, modal section gaps |
 | lg | 24px | Modal outer padding (existing), board outer padding (existing) |
 | xl | 32px | Not used in Phase 3 |
@@ -45,6 +46,7 @@ Exceptions:
 - Avatar overlap: -8px negative margin-left (DESIGN.md avatar group spec)
 - Cursor name pill offset: 6px below-right of arrow tip (custom position, not grid-aligned)
 - Touch target for avatar group container: min 32px height
+- **2px micro-padding:** Used for cursor name pill vertical padding (`2px 8px`), TipTap inline code padding (`2px 4px`), and floating toolbar button gap (`2px`). Justification: these are inline or micro-elements rendered at 12px font size where the minimum grid unit of 4px creates excessive visual padding relative to the text — 4px vertical padding on a 12px-tall pill inflates height by 67% vs. 33% with 2px. The 2px value is reserved exclusively for sub-grid-unit inline contexts.
 
 Source: DESIGN.md spacing system, CONTEXT.md D-09.
 
@@ -54,17 +56,25 @@ Source: DESIGN.md spacing system, CONTEXT.md D-09.
 
 | Role | Font | Size | Weight | Line Height | Phase 3 Usage |
 |------|------|------|--------|-------------|---------------|
-| Body | DM Sans | 14px (0.875rem) | 400 | 1.5 | TipTap editor body text, cursor name labels |
-| Label | DM Sans | 12px (0.75rem) | 400 | 1.25 | Cursor name pill text, co-editor avatar labels, "Reconnecting..." banner text |
+| Body | DM Sans | 14px (0.875rem) | 400 | 1.5 | TipTap editor body text, cursor name labels, avatar initials text (OnlineUsers 32px and CoEditorAvatars 24px), TipTap inline code (JetBrains Mono at 14px) |
+| Label | DM Sans | 12px (0.75rem) | 400 | 1.25 | Cursor name pill text, co-editor avatar labels, "Reconnecting..." banner text, TipTap in-editor cursor name labels, overflow "+N" pill text, connection status label (JetBrains Mono at 12px) |
 | Heading | Space Grotesk | 18px (1.125rem) | 600 | 1.25 | Modal title (existing), "Description" section label |
-| Caption | JetBrains Mono | 12px (0.75rem) | 400 | 1.25 | Connection status label (existing) |
+
+**Font weights used in Phase 3:** 400 (regular) and 600 (semibold). Two weights only.
+- 400: All body text, labels, captions, editor content, cursor pills
+- 600: Section headings, modal titles, emphasis
 
 **TipTap editor-specific typography:**
 - Paragraph: DM Sans 400, 14px, line-height 1.5, color `--text-primary` (#E2E8F0)
-- Bold: DM Sans 500 (weight bump only, no size change)
-- Inline code: JetBrains Mono 400, 13px, bg `--bg-card` (#1A2233), border-radius 4px, padding 2px 4px
+- Bold: DM Sans 600 (weight bump only, no size change)
+- Inline code: JetBrains Mono 400, 14px, bg `--bg-card` (#1A2233), border-radius 4px, padding 2px 4px
 - Placeholder: DM Sans 400, 14px, color `--text-muted` (#64748B)
-- Cursor name label inside editor: DM Sans 400, 10px, white text on user-color background
+- Cursor name label inside editor: DM Sans 400, 12px, white text on user-color background
+
+**Rationale for collapses (revision):**
+- 10px → 12px: Cursor name labels inside TipTap editor now use 12px (Label role) instead of 10px. 12px is the minimum legible size and matches the board-level cursor name pill.
+- 13px → 14px: Avatar initials text now uses 14px (Body role) instead of 13px. Visually negligible difference at avatar scale, maintains grid alignment.
+- 500 → dropped: TipTap bold uses 600 instead of 500 for stronger visual hierarchy. Avatar initials use 400 (weight distinction unnecessary — color is the primary differentiator).
 
 Source: DESIGN.md typography scale, CONTEXT.md D-01/D-04.
 
@@ -164,7 +174,7 @@ Source: CONTEXT.md code_context section, integration points list.
 | Name pill font | DM Sans 400, 12px (--text-xs) |
 | Name pill text color | `#FFFFFF` (white on colored background) |
 | Name pill background | User's assigned color |
-| Name pill padding | 2px 8px |
+| Name pill padding | 2px 8px (2px exception — see Spacing Scale) |
 | Name pill border-radius | 9999px (--radius-full) |
 | Name pill offset | 6px right and 2px down from arrow tip |
 | Glow effect | `filter: drop-shadow(0 0 8px {userColor})` |
@@ -195,7 +205,7 @@ Source: DESIGN.md cursor section, CONTEXT.md D-05/D-06/D-07/D-08, REQUIREMENTS.m
 | Avatar shape | circle (border-radius: 9999px) |
 | Avatar fill | User's assigned color (solid) |
 | Avatar text | Single uppercase initial (first letter of name), or two initials for two-word names |
-| Avatar text font | DM Sans 500, 13px |
+| Avatar text font | DM Sans 400, 14px |
 | Avatar text color | `#0C1017` (--bg-base) for light-on-dark readability on bright user colors |
 | Avatar border | 2px solid `#0C1017` (--bg-base) — creates visual separation in stack |
 | Avatar overlap | -8px margin-left (first avatar has no negative margin) |
@@ -222,10 +232,10 @@ Shared between `OnlineUsers` (32px) and `CoEditorAvatars` (24px). Accepts `size`
 | `color` | string (hex) | required |
 | `size` | `'sm'` \| `'md'` | `'md'` |
 
-| Size | Diameter | Text size | Border width |
-|------|----------|-----------|-------------|
-| sm | 24px | 10px | 1.5px |
-| md | 32px | 13px | 2px |
+| Size | Diameter | Text size | Text weight | Border width |
+|------|----------|-----------|-------------|-------------|
+| sm | 24px | 12px | 400 | 1.5px |
+| md | 32px | 14px | 400 | 2px |
 
 ### CollaborativeEditor
 
@@ -265,14 +275,26 @@ Shared between `OnlineUsers` (32px) and `CoEditorAvatars` (24px). Accepts `size`
 | Button default color | `#94A3B8` (--text-secondary) |
 | Button active color | `#22D3EE` (--accent) |
 | Button hover bg | `#1A2233` (--bg-card) |
-| Button gap | 2px |
+| Button gap | 2px (2px exception — see Spacing Scale) |
 | Shadow | `0 4px 12px rgba(0,0,0,0.4)` (--shadow-card-hover) |
 | Appear animation | Fade in + 4px translate-y, 150ms ease-out |
 | Disappear animation | Fade out, 100ms ease-in |
 
+**Floating toolbar accessibility (aria-labels):**
+
+| Button | Icon (lucide-react) | `aria-label` |
+|--------|-------------------|--------------|
+| Bold | `Bold` | `"Bold (Cmd+B)"` |
+| Italic | `Italic` | `"Italic (Cmd+I)"` |
+| Strikethrough | `Strikethrough` | `"Strikethrough (Cmd+Shift+S)"` |
+| Code | `Code` | `"Inline code (Cmd+E)"` |
+| Link | `Link` | `"Add link (Cmd+K)"` |
+
+Each button is `<button>` with `aria-label` and `title` matching the label value. Active state (formatting applied) is communicated via `aria-pressed="true"`.
+
 **Remote cursor rendering inside editor:**
 - Cursor line: 2px wide, full line height, user's color
-- Name label: DM Sans 400, 10px, white on user-color pill, border-radius 4px, positioned above cursor line
+- Name label: DM Sans 400, 12px, white on user-color pill, border-radius 4px, positioned above cursor line
 - Handled by `@tiptap/extension-collaboration-cursor` with custom renderer
 
 Source: CONTEXT.md D-01/D-02/D-03/D-04, DESIGN.md component patterns.
@@ -445,6 +467,7 @@ Source: DESIGN.md motion system, CONTEXT.md D-07/D-08/D-11.
 | Screen reader: online users | `aria-label="3 users online"` on avatar group container. Each avatar has `aria-label="{name}"` |
 | Screen reader: remote cursor | Cursors are decorative (`aria-hidden="true"`). No SR announcement for cursor movement |
 | Screen reader: co-editors | `aria-live="polite"` region near editor: "{name} joined editing" / "{name} left editing" |
+| Screen reader: floating toolbar | Each icon-only button has `aria-label` with action name and keyboard shortcut (e.g., `"Bold (Cmd+B)"`). Active state communicated via `aria-pressed`. See Floating Toolbar Accessibility table above |
 | Keyboard: editor | TipTap supports full keyboard navigation by default. Tab enters editor, Escape exits |
 | Keyboard: modal close | Escape closes modal (existing, unchanged) |
 | Focus management | When modal opens, focus moves to TipTap editor (replaces focus-to-modal-container) |
