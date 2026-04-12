@@ -19,6 +19,12 @@ const USER_COLORS = [
   '#2DD4BF', // Teal
 ];
 
+/** Bot colors (slots 2, 3, 4 — Maria, Carlos, Ana) — per D-13, exclude from guest */
+const BOT_COLORS = ['#F472B6', '#4ADE80', '#A78BFA'];
+
+/** Guest colors — palette slots not assigned to bots */
+const GUEST_COLORS = ['#22D3EE', '#FBBF24', '#FB7185', '#60A5FA', '#2DD4BF'];
+
 @Injectable()
 export class AuthService {
   private readonly refreshSecret: string;
@@ -118,6 +124,31 @@ export class AuthService {
 
   async validateToken(token: string) {
     return this.jwtService.verifyAsync(token);
+  }
+
+  /**
+   * Generate a guest JWT for anonymous demo board access.
+   * No database row created — per D-11, guests are ephemeral.
+   * Uses same JWT_SECRET as regular tokens per D-12.
+   * Color excludes bot-assigned colors per D-13.
+   */
+  generateGuestToken(): { accessToken: string } {
+    const guestId = crypto.randomUUID();
+    const shortId = guestId.slice(0, 6);
+    const color =
+      GUEST_COLORS[Math.floor(Math.random() * GUEST_COLORS.length)];
+
+    const accessToken = this.jwtService.sign(
+      {
+        sub: guestId,
+        name: `Guest-${shortId}`,
+        color,
+        role: 'guest',
+      },
+      { expiresIn: '24h' },
+    );
+
+    return { accessToken };
   }
 
   private async generateTokens(

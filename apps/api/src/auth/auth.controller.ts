@@ -6,6 +6,7 @@ import {
   Res,
   UnauthorizedException,
   HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
@@ -50,6 +51,13 @@ export class AuthController {
     res.cookie('refresh_token', refreshToken, REFRESH_COOKIE_OPTIONS);
 
     return { accessToken };
+  }
+
+  @Public()
+  @Post('guest')
+  @HttpCode(HttpStatus.CREATED)
+  generateGuestToken() {
+    return this.authService.generateGuestToken();
   }
 
   @Public()
