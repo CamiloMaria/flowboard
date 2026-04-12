@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import {
@@ -36,7 +36,7 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 3001;
   await app.listen(port);
-  console.log(`FlowBoard API running on port ${port}`);
+  new Logger('Bootstrap').log(`FlowBoard API running on port ${port}`);
 }
 
 bootstrap();

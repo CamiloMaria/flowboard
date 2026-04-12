@@ -1,7 +1,9 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, Logger } from '@nestjs/common';
 import { WebSocketServer, WebSocket } from 'ws';
 import { IncomingMessage } from 'http';
 import { JwtService } from '@nestjs/jwt';
+
+const logger = new Logger('YjsSetup');
 
 /**
  * Creates a standalone y-websocket server with noServer mode.
@@ -14,10 +16,10 @@ export function createYjsWebSocketServer(): WebSocketServer {
 
   wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
     const docName = req.url?.replace('/yjs/', '').split('?')[0] || 'default';
-    console.log(`[Yjs] Client connected to document: ${docName}`);
+    logger.log(`Client connected to document: ${docName}`);
 
     ws.on('close', () => {
-      console.log(`[Yjs] Client disconnected from document: ${docName}`);
+      logger.log(`Client disconnected from document: ${docName}`);
     });
 
     // y-websocket setupWSConnection will be wired here in Phase 3
@@ -96,7 +98,7 @@ export function setupDualWebSocket(
   );
 
   const listenerCount = httpServer.listeners('upgrade').length;
-  console.log(
-    `[WebSocket] Upgrade listeners: ${listenerCount} (expected: 1)`,
+  logger.log(
+    `Upgrade listeners: ${listenerCount} (expected: 1)`,
   );
 }
