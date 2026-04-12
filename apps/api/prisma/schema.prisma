@@ -66,8 +66,8 @@ model Card {
   descriptionYjs  Bytes?   @map("description_yjs")
   position        Float
   coverColor      String?  @map("cover_color")
-  createdById     String   @map("created_by")
-  createdBy       User     @relation(fields: [createdById], references: [id])
+  createdById     String?  @map("created_by")
+  createdBy       User?    @relation(fields: [createdById], references: [id])
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 

@@ -76,10 +76,12 @@ export class BoardController {
   async createCard(
     @Param('boardId') boardId: string,
     @Body() dto: CreateCardDto,
-    @CurrentUser() user: { sub: string },
+    @CurrentUser() user: { sub: string; role?: string },
     @Req() req: Request,
   ) {
-    const card = await this.boardService.createCard(boardId, dto, user.sub);
+    // Guests don't have a row in the users table — skip createdById FK
+    const userId = user.role === 'guest' ? undefined : user.sub;
+    const card = await this.boardService.createCard(boardId, dto, userId);
     this.boardGateway.broadcastToBoard(boardId, 'card:create', { card }, this.getSocketId(req));
     return card;
   }

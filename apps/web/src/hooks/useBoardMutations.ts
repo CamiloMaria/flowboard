@@ -219,23 +219,30 @@ export function useMoveCard(boardId: string) {
       queryClient.setQueryData<BoardWithLists>(['board', boardId], (old) => {
         if (!old) return old;
 
-        // Find the card in any list
+        // Remove the card from ALL lists first (prevents duplicates)
         let movedCard: Card | undefined;
         const listsWithoutCard = old.lists.map((l) => {
-          const cardIndex = l.cards.findIndex((c) => c.id === vars.cardId);
-          if (cardIndex !== -1) {
-            movedCard = { ...l.cards[cardIndex], listId: vars.targetListId, position: vars.newPosition };
-            return { ...l, cards: l.cards.filter((c) => c.id !== vars.cardId) };
+          const found = l.cards.find((c) => c.id === vars.cardId);
+          if (found && !movedCard) {
+            movedCard = { ...found, listId: vars.targetListId, position: vars.newPosition };
           }
-          return l;
+          return { ...l, cards: l.cards.filter((c) => c.id !== vars.cardId) };
         });
 
         if (!movedCard) return old;
 
-        // Add card to target list
+        // Add card to target list, then deduplicate by ID as a safety net
         const updated = listsWithoutCard.map((l) => {
           if (l.id === vars.targetListId) {
-            return { ...l, cards: [...l.cards, movedCard!] };
+            const cards = [...l.cards, movedCard!];
+            // Deduplicate: keep only the last occurrence of each card ID
+            const seen = new Set<string>();
+            const deduped = cards.filter((c) => {
+              if (seen.has(c.id)) return false;
+              seen.add(c.id);
+              return true;
+            });
+            return { ...l, cards: deduped };
           }
           return l;
         });

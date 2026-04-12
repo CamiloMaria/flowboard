@@ -105,7 +105,7 @@ export class BoardService {
         title: dto.title,
         coverColor: dto.coverColor,
         position: maxPosition + 1000,
-        createdById: userId,
+        ...(userId ? { createdById: userId } : {}),
       },
     });
   }
