@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { WebSocketServer, WebSocket } from 'ws';
 import { IncomingMessage } from 'http';
+import { JwtService } from '@nestjs/jwt';
 
 /**
  * Creates a standalone y-websocket server with noServer mode.
@@ -60,6 +61,23 @@ export function setupDualWebSocket(
       const pathname = request.url || '';
 
       if (pathname.startsWith('/yjs/')) {
+        // Validate JWT before completing WebSocket handshake
+        const url = new URL(request.url!, `http://${request.headers.host}`);
+        const token = url.searchParams.get('token');
+        if (!token) {
+          socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+          socket.destroy();
+          return;
+        }
+        try {
+          const jwtService = app.get(JwtService);
+          jwtService.verify(token);
+        } catch {
+          socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+          socket.destroy();
+          return;
+        }
+
         // Route to y-websocket server
         yjsWss.handleUpgrade(request, socket, head, (ws) => {
           yjsWss.emit('connection', ws, request);
