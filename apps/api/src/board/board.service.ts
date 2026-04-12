@@ -138,7 +138,7 @@ export class BoardService {
       throw new NotFoundException(`Card ${cardId} not found`);
     }
 
-    const updatedCard = await this.prisma.card.update({
+    await this.prisma.card.update({
       where: { id: cardId },
       data: {
         listId: dto.targetListId,
@@ -147,10 +147,17 @@ export class BoardService {
     });
 
     // Check if rebalancing is needed in target list
-    await this.rebalanceIfNeeded(dto.targetListId);
+    const rebalanced = await this.rebalanceIfNeeded(dto.targetListId);
 
-    // Return fresh card data (position may have changed after rebalance)
-    return this.prisma.card.findUnique({ where: { id: cardId } });
+    // If rebalanced, re-fetch for updated position; otherwise use known values
+    if (rebalanced) {
+      const fresh = await this.prisma.card.findUnique({ where: { id: cardId } });
+      if (!fresh) throw new NotFoundException(`Card ${cardId} not found after rebalance`);
+      return fresh;
+    }
+
+    // No rebalance — return card with updated fields directly
+    return { ...card, listId: dto.targetListId, position: dto.newPosition };
   }
 
   private async rebalanceIfNeeded(listId: string): Promise<boolean> {
