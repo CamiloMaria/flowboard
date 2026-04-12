@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type ConnectionStatus = 'connected' | 'reconnecting' | 'disconnected';
+export type ConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
 
 interface BoardUIState {
   selectedCardId: string | null;
@@ -13,7 +13,7 @@ interface BoardUIState {
 
 export const useBoardStore = create<BoardUIState>((set) => ({
   selectedCardId: null,
-  connectionStatus: 'disconnected',
+  connectionStatus: 'connecting',
   openCard: (cardId) => set({ selectedCardId: cardId }),
   closeCard: () => set({ selectedCardId: null }),
   setConnectionStatus: (status) => set({ connectionStatus: status }),

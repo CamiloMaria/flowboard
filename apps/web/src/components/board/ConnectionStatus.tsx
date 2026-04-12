@@ -5,6 +5,10 @@ const statusConfig = {
     color: 'bg-[#34D399]',
     label: 'Connected',
   },
+  connecting: {
+    color: 'bg-[#FB923C]',
+    label: 'Connecting...',
+  },
   reconnecting: {
     color: 'bg-[#FB923C]',
     label: 'Reconnecting...',
