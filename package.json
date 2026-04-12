@@ -1,0 +1,14 @@
+{
+  "name": "flowboard",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test"
+  },
+  "devDependencies": {
+    "turbo": "^2.9.6"
+  },
+  "packageManager": "pnpm@10.33.0"
+}
