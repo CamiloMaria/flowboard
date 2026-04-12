@@ -81,7 +81,15 @@ export function FloatingToolbar({ editor }: FloatingToolbarProps) {
             } else {
               const url = window.prompt('Enter URL:');
               if (url) {
-                editor.chain().focus().setLink({ href: url }).run();
+                // WR-03: Only allow http/https URLs to prevent javascript: URI injection
+                try {
+                  const parsed = new URL(url);
+                  if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+                    editor.chain().focus().setLink({ href: url }).run();
+                  }
+                } catch {
+                  // Invalid URL — ignore
+                }
               }
             }
           }}
