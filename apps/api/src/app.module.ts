@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { WebSocketModule } from './websocket/websocket.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { WebSocketModule } from './websocket/websocket.module';
     PrismaModule,
     RedisModule,
     WebSocketModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
