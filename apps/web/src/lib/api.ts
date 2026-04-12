@@ -1,3 +1,5 @@
+import { getSocketId } from './socket';
+
 const TOKEN_KEY = 'flowboard_token';
 
 let accessToken: string | null = (() => {
@@ -36,6 +38,14 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
 
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
+  // Attach socket ID so the server can exclude this client from broadcasts
+  if (options.method && options.method !== 'GET') {
+    const socketId = getSocketId();
+    if (socketId) {
+      headers['X-Socket-Id'] = socketId;
+    }
   }
 
   const response = await fetch(path, {

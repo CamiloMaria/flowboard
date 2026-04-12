@@ -35,3 +35,7 @@ export function disconnectSocket(): void {
 export function getSocket(): Socket | null {
   return socket;
 }
+
+export function getSocketId(): string | undefined {
+  return socket?.id;
+}

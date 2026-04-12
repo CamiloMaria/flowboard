@@ -8,7 +8,9 @@ import {
   Body,
   HttpCode,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { BoardService } from './board.service';
 import { BoardGateway } from '../websocket/board.gateway';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -25,6 +27,10 @@ export class BoardController {
     private readonly boardGateway: BoardGateway,
   ) {}
 
+  private getSocketId(req: Request): string | undefined {
+    return req.headers['x-socket-id'] as string | undefined;
+  }
+
   @Get(':id')
   getBoard(@Param('id') id: string) {
     return this.boardService.getBoard(id);
@@ -35,9 +41,10 @@ export class BoardController {
   async createList(
     @Param('boardId') boardId: string,
     @Body() dto: CreateListDto,
+    @Req() req: Request,
   ) {
     const list = await this.boardService.createList(boardId, dto);
-    this.boardGateway.broadcastToBoard(boardId, 'list:create', { list });
+    this.boardGateway.broadcastToBoard(boardId, 'list:create', { list }, this.getSocketId(req));
     return list;
   }
 
@@ -46,9 +53,10 @@ export class BoardController {
     @Param('boardId') boardId: string,
     @Param('listId') listId: string,
     @Body() dto: UpdateListDto,
+    @Req() req: Request,
   ) {
     const list = await this.boardService.updateList(boardId, listId, dto);
-    this.boardGateway.broadcastToBoard(boardId, 'list:update', { list });
+    this.boardGateway.broadcastToBoard(boardId, 'list:update', { list }, this.getSocketId(req));
     return list;
   }
 
@@ -57,9 +65,10 @@ export class BoardController {
   async deleteList(
     @Param('boardId') boardId: string,
     @Param('listId') listId: string,
+    @Req() req: Request,
   ) {
     await this.boardService.deleteList(boardId, listId);
-    this.boardGateway.broadcastToBoard(boardId, 'list:delete', { listId });
+    this.boardGateway.broadcastToBoard(boardId, 'list:delete', { listId }, this.getSocketId(req));
   }
 
   @Post(':boardId/cards')
@@ -68,9 +77,10 @@ export class BoardController {
     @Param('boardId') boardId: string,
     @Body() dto: CreateCardDto,
     @CurrentUser() user: { sub: string },
+    @Req() req: Request,
   ) {
     const card = await this.boardService.createCard(boardId, dto, user.sub);
-    this.boardGateway.broadcastToBoard(boardId, 'card:create', { card });
+    this.boardGateway.broadcastToBoard(boardId, 'card:create', { card }, this.getSocketId(req));
     return card;
   }
 
@@ -79,9 +89,10 @@ export class BoardController {
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string,
     @Body() dto: UpdateCardDto,
+    @Req() req: Request,
   ) {
     const card = await this.boardService.updateCard(cardId, dto);
-    this.boardGateway.broadcastToBoard(boardId, 'card:update', { card });
+    this.boardGateway.broadcastToBoard(boardId, 'card:update', { card }, this.getSocketId(req));
     return card;
   }
 
@@ -90,12 +101,13 @@ export class BoardController {
   async deleteCard(
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string,
+    @Req() req: Request,
   ) {
     const card = await this.boardService.deleteCard(cardId);
     this.boardGateway.broadcastToBoard(boardId, 'card:delete', {
       cardId,
       listId: card.listId,
-    });
+    }, this.getSocketId(req));
   }
 
   @Post(':boardId/cards/:cardId/move')
@@ -104,6 +116,7 @@ export class BoardController {
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string,
     @Body() dto: MoveCardDto,
+    @Req() req: Request,
   ) {
     const fromCard = await this.boardService.getCardById(cardId);
     const fromListId = fromCard.listId;
@@ -114,7 +127,7 @@ export class BoardController {
       toListId: dto.targetListId,
       newPosition: dto.newPosition,
       card: result,
-    });
+    }, this.getSocketId(req));
     return result;
   }
 }
