@@ -72,8 +72,15 @@ Plans:
   3. Board header shows online user avatars with colored borders, animating on join/leave
   4. Remote user cursors are visible on the board canvas with colored glow effect and name label
   5. Yjs document state persists to database on last-user-disconnect and on 30-second debounce during active editing
-**Plans**: TBD
+**Plans:** 5 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 03-01-PLAN.md — Shared presence/collaboration type definitions
+- [ ] 03-02-PLAN.md — Backend Yjs collaboration service (y-websocket + PostgreSQL persistence)
+- [ ] 03-03-PLAN.md — Frontend collaborative TipTap editor + floating toolbar + co-editor avatars
+- [ ] 03-04-PLAN.md — Backend presence service + frontend cursors/avatars
+- [ ] 03-05-PLAN.md — Integration verification checkpoint
 
 ### Phase 4: Demo Mode & Polish
 **Goal**: A recruiter visits `/demo` and sees compelling live collaboration (bots moving cards, typing in editors, cursors roaming) with polished animations — all within 5 seconds of landing
@@ -109,6 +116,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 0/6 | Planning complete | - |
 | 2. Board Core | 0/TBD | Not started | - |
-| 3. Real-time Collaboration | 0/TBD | Not started | - |
+| 3. Real-time Collaboration | 0/5 | Planning complete | - |
 | 4. Demo Mode & Polish | 0/TBD | Not started | - |
 | 5. Deploy & Documentation | 0/TBD | Not started | - |
