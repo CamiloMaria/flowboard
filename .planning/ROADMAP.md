@@ -34,11 +34,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md — Monorepo scaffold with Turborepo, pnpm, Docker Compose, shared types
-- [ ] 01-02-PLAN.md — Prisma 7 schema, PrismaModule, RedisModule, DB push
-- [ ] 01-03-PLAN.md — React frontend shell with Tailwind v4, routing, API helper
-- [ ] 01-04-PLAN.md — Dual WebSocket spike (Socket.io + y-websocket coexistence)
-- [ ] 01-05-PLAN.md — JWT auth: register, login, refresh rotation, guards, WS middleware
-- [ ] 01-06-PLAN.md — Guest JWT flow and demo board seed script
+- [x] 01-02-PLAN.md — Prisma 7 schema, PrismaModule, RedisModule, DB push
+- [x] 01-03-PLAN.md — React frontend shell with Tailwind v4, routing, API helper
+- [x] 01-04-PLAN.md — Dual WebSocket spike (Socket.io + y-websocket coexistence)
+- [x] 01-05-PLAN.md — JWT auth: register, login, refresh rotation, guards, WS middleware
+- [x] 01-06-PLAN.md — Guest JWT flow and demo board seed script
 
 ### Phase 2: Board Core
 **Goal**: Users can view, create, edit, and reorganize cards across lists with drag-and-drop, with all changes broadcast to connected clients in real-time
