@@ -85,7 +85,7 @@ export class BoardService {
     await this.prisma.list.delete({ where: { id: listId } });
   }
 
-  async createCard(boardId: string, dto: CreateCardDto, userId: string) {
+  async createCard(boardId: string, dto: CreateCardDto, userId?: string) {
     // Verify board exists
     const board = await this.prisma.board.findUnique({ where: { id: boardId } });
     if (!board) {
