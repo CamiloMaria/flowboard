@@ -186,15 +186,15 @@ export class BoardService {
 
     if (!needsRebalance) return false;
 
-    // Rebalance: assign positions as (index + 1) * 1000
-    const updates = cards.map((card, index) =>
-      this.prisma.card.update({
-        where: { id: card.id },
-        data: { position: (index + 1) * 1000 },
-      }),
+    // Rebalance: assign positions as (index + 1) * 1000 atomically
+    await this.prisma.$transaction(
+      cards.map((card, index) =>
+        this.prisma.card.update({
+          where: { id: card.id },
+          data: { position: (index + 1) * 1000 },
+        }),
+      ),
     );
-
-    await Promise.all(updates);
     return true;
   }
 }
