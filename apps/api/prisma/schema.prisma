@@ -1,0 +1,89 @@
+// FlowBoard Database Schema
+// Prisma 7 with custom output for monorepo compatibility
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  avatarUrl    String?  @map("avatar_url")
+  color        String
+  isBot        Boolean  @default(false) @map("is_bot")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  boards        Board[]
+  cards         Card[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model Board {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?
+  backgroundColor String?  @map("background_color")
+  isDemo          Boolean  @default(false) @map("is_demo")
+  createdById     String   @map("created_by")
+  createdBy       User     @relation(fields: [createdById], references: [id])
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  lists List[]
+
+  @@index([isDemo], name: "idx_boards_demo")
+  @@map("boards")
+}
+
+model List {
+  id        String   @id @default(uuid())
+  boardId   String   @map("board_id")
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  name      String
+  position  Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  cards Card[]
+
+  @@index([boardId, position])
+  @@map("lists")
+}
+
+model Card {
+  id              String   @id @default(uuid())
+  listId          String   @map("list_id")
+  list            List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  title           String
+  descriptionText String?  @map("description_text")
+  descriptionYjs  Bytes?   @map("description_yjs")
+  position        Float
+  coverColor      String?  @map("cover_color")
+  createdById     String   @map("created_by")
+  createdBy       User     @relation(fields: [createdById], references: [id])
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([listId, position])
+  @@map("cards")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked   Boolean  @default(false)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
