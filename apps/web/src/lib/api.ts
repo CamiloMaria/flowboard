@@ -1,0 +1,49 @@
+let accessToken: string | null = null;
+
+export function setAccessToken(token: string | null) {
+  accessToken = token;
+}
+
+export function getAccessToken(): string | null {
+  return accessToken;
+}
+
+async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...((options.headers as Record<string, string>) || {}),
+  };
+
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(path, {
+    ...options,
+    headers,
+    credentials: 'include', // Send cookies for refresh token
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: response.statusText }));
+    throw new Error(error.message || `API error: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export function apiGet<T>(path: string): Promise<T> {
+  return apiFetch<T>(path, { method: 'GET' });
+}
+
+export function apiPost<T>(path: string, body?: unknown): Promise<T> {
+  return apiFetch<T>(path, { method: 'POST', body: body ? JSON.stringify(body) : undefined });
+}
+
+export function apiPut<T>(path: string, body?: unknown): Promise<T> {
+  return apiFetch<T>(path, { method: 'PUT', body: body ? JSON.stringify(body) : undefined });
+}
+
+export function apiDelete<T>(path: string): Promise<T> {
+  return apiFetch<T>(path, { method: 'DELETE' });
+}
