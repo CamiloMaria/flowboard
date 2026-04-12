@@ -1,8 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
+import {
+  createYjsWebSocketServer,
+  setupDualWebSocket,
+} from '../src/websocket/yjs.setup';
 import { io as ioClient, Socket } from 'socket.io-client';
-import WebSocket from 'ws';
+import * as WebSocket from 'ws';
 
 describe('Dual WebSocket Spike (E2E)', () => {
   let app: INestApplication;
@@ -15,6 +19,11 @@ describe('Dual WebSocket Spike (E2E)', () => {
 
     app = moduleRef.createNestApplication();
     await app.init();
+
+    // Wire dual WebSocket — same as main.ts bootstrap
+    const yjsWss = createYjsWebSocketServer();
+    setupDualWebSocket(app, yjsWss);
+
     await app.listen(0); // Random port
     const address = app.getHttpServer().address();
     port = typeof address === 'string' ? parseInt(address) : address.port;
