@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-04-12T14:04:55.840Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-04-12T14:14:00.343Z"
 last_activity: 2026-04-12
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 7
-  percent: 58
+  completed_plans: 8
+  percent: 67
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 02 (board-core) — EXECUTING
-Plan: 2 of 6
+Plan: 3 of 6
 Status: Ready to execute
 Last activity: 2026-04-12
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 02 P01 | 4min | 2 tasks | 10 files |
+| Phase 02 P02 | 6min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -68,6 +69,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Socket.io client uses module-level singleton pattern for framework-agnostic access
 - [Phase 02]: Zustand for UI-only state; TanStack Query for server state separation
 - [Phase 02]: Tailwind hex values aligned to DESIGN.md (shifted surface-primary from #0B0E14 to #0C1017)
+- [Phase 02]: Controller injects BoardGateway directly for broadcasting — no event emitter indirection
+- [Phase 02]: Fractional indexing: max+1000 for new items, rebalance when gap < 0.001
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-12T14:04:55.838Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-04-12T14:14:00.341Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None

@@ -28,23 +28,23 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Board Management
 
 - [x] **BORD-01**: User can view a board with vertical columns (lists) and cards stacked in each
-- [ ] **BORD-02**: User can create, rename, and delete lists on their board
-- [ ] **BORD-03**: User can create cards with title in any list
-- [ ] **BORD-04**: User can click a card to open detail modal showing full description
-- [ ] **BORD-05**: User can edit card title inline on the board
-- [ ] **BORD-06**: User can delete cards
-- [ ] **BORD-07**: Demo board seeded with 5 lists (Backlog, To Do, In Progress, Review, Done) and 17 cards
-- [ ] **BORD-08**: Fractional indexing with FLOAT positions for card and list ordering
-- [ ] **BORD-09**: Rebalancing triggered when position precision degrades after dense insertions
+- [x] **BORD-02**: User can create, rename, and delete lists on their board
+- [x] **BORD-03**: User can create cards with title in any list
+- [x] **BORD-04**: User can click a card to open detail modal showing full description
+- [x] **BORD-05**: User can edit card title inline on the board
+- [x] **BORD-06**: User can delete cards
+- [x] **BORD-07**: Demo board seeded with 5 lists (Backlog, To Do, In Progress, Review, Done) and 17 cards
+- [x] **BORD-08**: Fractional indexing with FLOAT positions for card and list ordering
+- [x] **BORD-09**: Rebalancing triggered when position precision degrades after dense insertions
 
 ### Drag and Drop
 
 - [ ] **DND-01**: User can drag cards to reorder within the same list
 - [ ] **DND-02**: User can drag cards across lists (e.g., To Do -> In Progress)
 - [ ] **DND-03**: Drag overlay (ghost card) follows cursor during drag with lift effect (scale + shadow)
-- [ ] **DND-04**: Card appears in new position immediately (optimistic update), syncs to server async
+- [x] **DND-04**: Card appears in new position immediately (optimistic update), syncs to server async
 - [ ] **DND-05**: Failed move reverts card to original position with ease-out animation and toast notification
-- [ ] **DND-06**: Remote card moves broadcast via Socket.io — all connected clients see card animate to new position in real-time
+- [x] **DND-06**: Remote card moves broadcast via Socket.io — all connected clients see card animate to new position in real-time
 
 ### Collaborative Editing
 
@@ -149,20 +149,20 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-05 | Phase 1: Foundation & Auth | Pending |
 | AUTH-06 | Phase 1: Foundation & Auth | Pending |
 | BORD-01 | Phase 2: Board Core | Complete |
-| BORD-02 | Phase 2: Board Core | Pending |
-| BORD-03 | Phase 2: Board Core | Pending |
-| BORD-04 | Phase 2: Board Core | Pending |
-| BORD-05 | Phase 2: Board Core | Pending |
-| BORD-06 | Phase 2: Board Core | Pending |
-| BORD-07 | Phase 2: Board Core | Pending |
-| BORD-08 | Phase 2: Board Core | Pending |
-| BORD-09 | Phase 2: Board Core | Pending |
+| BORD-02 | Phase 2: Board Core | Complete |
+| BORD-03 | Phase 2: Board Core | Complete |
+| BORD-04 | Phase 2: Board Core | Complete |
+| BORD-05 | Phase 2: Board Core | Complete |
+| BORD-06 | Phase 2: Board Core | Complete |
+| BORD-07 | Phase 2: Board Core | Complete |
+| BORD-08 | Phase 2: Board Core | Complete |
+| BORD-09 | Phase 2: Board Core | Complete |
 | DND-01 | Phase 2: Board Core | Pending |
 | DND-02 | Phase 2: Board Core | Pending |
 | DND-03 | Phase 2: Board Core | Pending |
-| DND-04 | Phase 2: Board Core | Pending |
+| DND-04 | Phase 2: Board Core | Complete |
 | DND-05 | Phase 2: Board Core | Pending |
-| DND-06 | Phase 2: Board Core | Pending |
+| DND-06 | Phase 2: Board Core | Complete |
 | COLLAB-01 | Phase 3: Real-time Collaboration | Pending |
 | COLLAB-02 | Phase 3: Real-time Collaboration | Pending |
 | COLLAB-03 | Phase 3: Real-time Collaboration | Pending |
