@@ -23,32 +23,33 @@ const MAX_RECONNECT_ATTEMPTS = 6;
 export function useYjsProvider({ cardId, user }: UseYjsProviderOptions): UseYjsProviderReturn {
   const [status, setStatus] = useState<YjsConnectionStatus>('connecting');
   const [coEditors, setCoEditors] = useState<CoEditorInfo[]>([]);
+  // WR-05: Use state (not refs) for ydoc/provider so setting them triggers re-render
+  const [ydoc, setYdoc] = useState<Y.Doc | null>(null);
+  const [provider, setProvider] = useState<WebsocketProvider | null>(null);
   const reconnectAttempts = useRef(0);
-  const ydocRef = useRef<Y.Doc | null>(null);
-  const providerRef = useRef<WebsocketProvider | null>(null);
 
   useEffect(() => {
-    const ydoc = new Y.Doc();
+    const doc = new Y.Doc();
     const token = getAccessToken() ?? '';
 
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${wsProtocol}//${window.location.host}/yjs`;
 
-    const provider = new WebsocketProvider(wsUrl, `card:${cardId}`, ydoc, {
+    const prov = new WebsocketProvider(wsUrl, `card:${cardId}`, doc, {
       params: { token },
     });
 
-    ydocRef.current = ydoc;
-    providerRef.current = provider;
+    setYdoc(doc);
+    setProvider(prov);
 
     // Set local awareness state for cursor rendering
-    provider.awareness.setLocalStateField('user', {
+    prov.awareness.setLocalStateField('user', {
       name: user.name,
       color: user.color,
     });
 
     // Track connection status
-    provider.on('status', ({ status: wsStatus }: { status: string }) => {
+    prov.on('status', ({ status: wsStatus }: { status: string }) => {
       if (wsStatus === 'connected') {
         reconnectAttempts.current = 0;
         setStatus('connected');
@@ -66,12 +67,12 @@ export function useYjsProvider({ cardId, user }: UseYjsProviderOptions): UseYjsP
 
     // Track co-editors from awareness
     const updateCoEditors = () => {
-      const states = provider.awareness.getStates();
+      const states = prov.awareness.getStates();
       const editors: CoEditorInfo[] = [];
 
       states.forEach((state, clientId) => {
         // Skip local client
-        if (clientId === ydoc.clientID) return;
+        if (clientId === doc.clientID) return;
         if (state.user) {
           editors.push({
             userId: String(clientId),
@@ -84,21 +85,16 @@ export function useYjsProvider({ cardId, user }: UseYjsProviderOptions): UseYjsP
       setCoEditors(editors);
     };
 
-    provider.awareness.on('change', updateCoEditors);
+    prov.awareness.on('change', updateCoEditors);
 
     return () => {
-      provider.awareness.off('change', updateCoEditors);
-      provider.destroy();
-      ydoc.destroy();
-      ydocRef.current = null;
-      providerRef.current = null;
+      prov.awareness.off('change', updateCoEditors);
+      prov.destroy();
+      doc.destroy();
+      setYdoc(null);
+      setProvider(null);
     };
   }, [cardId, user.name, user.color]);
 
-  return {
-    ydoc: ydocRef.current,
-    provider: providerRef.current,
-    status,
-    coEditors,
-  };
+  return { ydoc, provider, status, coEditors };
 }
