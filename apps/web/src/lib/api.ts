@@ -1,7 +1,24 @@
-let accessToken: string | null = null;
+const TOKEN_KEY = 'flowboard_token';
+
+let accessToken: string | null = (() => {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+})();
 
 export function setAccessToken(token: string | null) {
   accessToken = token;
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_KEY);
+    }
+  } catch {
+    // localStorage unavailable (SSR, private browsing)
+  }
 }
 
 export function getAccessToken(): string | null {
