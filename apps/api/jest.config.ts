@@ -11,6 +11,9 @@ const config: Config = {
   collectCoverageFrom: ['src/**/*.ts'],
   coverageDirectory: './coverage',
   testEnvironment: 'node',
+  // Run E2E suites sequentially — they share a database and
+  // parallel beforeEach deleteMany() causes FK race conditions
+  maxWorkers: 1,
   moduleNameMapper: {
     '^@flowboard/shared$': '<rootDir>/../../packages/shared/src',
     '^@flowboard/shared/(.*)$': '<rootDir>/../../packages/shared/src/$1',

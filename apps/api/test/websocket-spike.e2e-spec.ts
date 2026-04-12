@@ -106,7 +106,7 @@ describe('Dual WebSocket Spike (E2E)', () => {
   }, 10000);
 
   it('y-websocket client connects on /yjs/', (done) => {
-    const ws = new WebSocket(`ws://localhost:${port}/yjs/test-doc`);
+    const ws = new WebSocket(`ws://localhost:${port}/yjs/test-doc?token=${testJwt}`);
     ws.on('open', () => {
       expect(ws.readyState).toBe(WebSocket.OPEN);
       ws.close();
@@ -120,7 +120,7 @@ describe('Dual WebSocket Spike (E2E)', () => {
       transports: ['websocket'],
       auth: { token: testJwt },
     });
-    const yjsWs = new WebSocket(`ws://localhost:${port}/yjs/test-doc`);
+    const yjsWs = new WebSocket(`ws://localhost:${port}/yjs/test-doc?token=${testJwt}`);
 
     let socketIoConnected = false;
     let yjsConnected = false;
