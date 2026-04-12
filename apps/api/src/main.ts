@@ -38,9 +38,10 @@ async function bootstrap() {
   setupDualWebSocket(app, yjsWss);
 
   // Flush dirty Yjs documents on shutdown to prevent data loss
-  const shutdownHandler = () => {
+  const shutdownHandler = async () => {
     new Logger('Bootstrap').log('Flushing dirty Yjs documents before shutdown...');
-    flushAllDirtyDocs();
+    await flushAllDirtyDocs();
+    process.exit(0);
   };
   process.on('SIGTERM', shutdownHandler);
   process.on('SIGINT', shutdownHandler);

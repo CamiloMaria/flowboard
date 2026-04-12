@@ -179,18 +179,23 @@ export function setupDebouncedPersistence(
 /**
  * Flush all dirty documents immediately.
  * Called on SIGTERM/SIGINT to ensure no data is lost.
+ * Returns a promise that resolves when all writes complete.
  */
-export function flushAllDirtyDocs(): void {
+export async function flushAllDirtyDocs(): Promise<void> {
   for (const [docName, timer] of debounceTimers.entries()) {
     clearTimeout(timer);
     debounceTimers.delete(docName);
   }
 
+  const flushPromises: Promise<void>[] = [];
   for (const [docName, { ydoc, prisma }] of dirtyDocs.entries()) {
-    // Fire-and-forget — process is shutting down
-    writeState(docName, ydoc, prisma).catch((err) =>
-      logger.error(`Failed to flush ${docName}: ${err}`),
+    flushPromises.push(
+      writeState(docName, ydoc, prisma).catch((err) =>
+        logger.error(`Failed to flush ${docName}: ${err}`),
+      ),
     );
     dirtyDocs.delete(docName);
   }
+
+  await Promise.all(flushPromises);
 }
