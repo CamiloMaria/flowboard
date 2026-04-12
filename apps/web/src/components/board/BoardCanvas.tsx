@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { DragDropProvider, DragOverlay } from '@dnd-kit/react';
 import type { BoardWithLists } from '@flowboard/shared';
@@ -48,6 +48,11 @@ export function BoardCanvas({ board }: BoardCanvasProps) {
     return () => window.removeEventListener('pointermove', handlePointerMove);
   }, [activeCard]);
 
+  const sortedLists = useMemo(
+    () => [...board.lists].sort((a, b) => a.position - b.position),
+    [board.lists],
+  );
+
   return (
     <DragDropProvider
       onDragStart={onDragStart}
@@ -60,9 +65,7 @@ export function BoardCanvas({ board }: BoardCanvasProps) {
         style={{ scrollbarWidth: 'none' }}
       >
         <AnimatePresence>
-          {board.lists
-            .sort((a, b) => a.position - b.position)
-            .map((list) => (
+          {sortedLists.map((list) => (
               <motion.div
                 key={list.id}
                 layout

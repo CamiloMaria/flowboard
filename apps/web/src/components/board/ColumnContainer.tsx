@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useDroppable } from '@dnd-kit/react';
 import { Plus, MoreHorizontal } from 'lucide-react';
@@ -15,7 +15,10 @@ interface ColumnContainerProps {
 }
 
 export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
-  const sortedCards = [...list.cards].sort((a, b) => a.position - b.position);
+  const sortedCards = useMemo(
+    () => [...list.cards].sort((a, b) => a.position - b.position),
+    [list.cards],
+  );
   const reducedMotion = useReducedMotion();
 
   const updateList = useUpdateList(boardId);
