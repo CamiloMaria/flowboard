@@ -76,11 +76,11 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 03-01-PLAN.md — Shared presence/collaboration type definitions
-- [ ] 03-02-PLAN.md — Backend Yjs collaboration service (y-websocket + PostgreSQL persistence)
-- [ ] 03-03-PLAN.md — Frontend collaborative TipTap editor + floating toolbar + co-editor avatars
-- [ ] 03-04-PLAN.md — Backend presence service + frontend cursors/avatars
-- [ ] 03-05-PLAN.md — Integration verification checkpoint
+- [x] 03-01-PLAN.md — Shared presence/collaboration type definitions
+- [x] 03-02-PLAN.md — Backend Yjs collaboration service (y-websocket + PostgreSQL persistence)
+- [x] 03-03-PLAN.md — Frontend collaborative TipTap editor + floating toolbar + co-editor avatars
+- [x] 03-04-PLAN.md — Backend presence service + frontend cursors/avatars
+- [x] 03-05-PLAN.md — Integration verification checkpoint
 
 ### Phase 4: Demo Mode & Polish
 **Goal**: A recruiter visits `/demo` and sees compelling live collaboration (bots moving cards, typing in editors, cursors roaming) with polished animations — all within 5 seconds of landing
