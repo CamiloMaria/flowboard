@@ -22,7 +22,7 @@ const borderColorMap: Record<ToastType, string> = {
 };
 
 export function Toast({ toast, onDismiss }: ToastProps) {
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
     timerRef.current = setTimeout(() => {

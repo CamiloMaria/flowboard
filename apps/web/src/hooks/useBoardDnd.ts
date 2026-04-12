@@ -18,8 +18,9 @@ export function useBoardDnd(boardId: string) {
   const snapshotRef = useRef<BoardWithLists | null>(null);
 
   const onDragStart = useCallback(
-    (event: { operation: { source: { data?: { card?: Card } } } }) => {
-      const card = event.operation.source?.data?.card as Card | undefined;
+    (event: Parameters<NonNullable<React.ComponentProps<typeof import('@dnd-kit/react').DragDropProvider>['onDragStart']>>[0]) => {
+      const source = event.operation.source;
+      const card = (source?.data as any)?.card as Card | undefined;
       if (card) {
         const queryClient = getQueryClient();
         snapshotRef.current =
@@ -35,35 +36,18 @@ export function useBoardDnd(boardId: string) {
   );
 
   const onDragOver = useCallback(
-    (event: { operation: { source: { type?: string } } }) => {
-      // Let @dnd-kit handle visual reordering via CSS transforms.
-      // No state updates needed during drag — we resolve the final
-      // target in onDragEnd using source.group + target.id.
-      const sourceType = event.operation.source?.type;
-      if (sourceType === 'column') return;
+    (event: Parameters<NonNullable<React.ComponentProps<typeof import('@dnd-kit/react').DragDropProvider>['onDragOver']>>[0]) => {
+      const source = event.operation.source;
+      if (source?.type === 'column') return;
     },
     [],
   );
 
   const onDragEnd = useCallback(
-    (event: {
-      canceled?: boolean;
-      operation: {
-        source: {
-          data?: { card?: Card };
-          type?: string;
-          group?: string;
-          index?: number;
-        };
-        target?: {
-          id?: string | number;
-        };
-      };
-    }) => {
+    (event: Parameters<NonNullable<React.ComponentProps<typeof import('@dnd-kit/react').DragDropProvider>['onDragEnd']>>[0]) => {
       const { source, target } = event.operation;
-      const card = source.data?.card as Card | undefined;
+      const card = (source?.data as any)?.card as Card | undefined;
 
-      // If drag was canceled, revert to snapshot
       if (event.canceled) {
         if (snapshotRef.current) {
           const queryClient = getQueryClient();
@@ -73,18 +57,18 @@ export function useBoardDnd(boardId: string) {
         return;
       }
 
-      if (!card) {
+      if (!card || !source) {
         setDragState({ activeCard: null, activeCardOriginalListId: null });
         return;
       }
 
       // Determine target list:
       // 1. source.group — @dnd-kit updates this when the item enters a new sortable group
-      // 2. target.id — the droppable column ID (handles empty lists where no sortable items exist)
+      // 2. target.id — the droppable column ID (handles empty lists)
       // 3. Fallback to original list
-      let targetListId = source.group as string | undefined;
+      const sourceAny = source as any;
+      let targetListId = sourceAny.group as string | undefined;
 
-      // If source.group didn't change (no sortable items in target), check the droppable column
       if ((!targetListId || targetListId === card.listId) && target?.id) {
         const droppableId = String(target.id);
         if (droppableId.startsWith('column-')) {
@@ -96,15 +80,13 @@ export function useBoardDnd(boardId: string) {
         targetListId = card.listId;
       }
 
-      const targetIndex = source.index ?? 0;
+      const targetIndex: number = sourceAny.index ?? 0;
 
-      // Skip if card didn't actually move
-      if (targetListId === card.listId && targetIndex === 0 && !source.group) {
+      if (targetListId === card.listId && targetIndex === 0 && !sourceAny.group) {
         setDragState({ activeCard: null, activeCardOriginalListId: null });
         return;
       }
 
-      // Read current board state from cache to calculate fractional position
       const queryClient = getQueryClient();
       const board = queryClient.getQueryData<BoardWithLists>(['board', boardId]);
 
