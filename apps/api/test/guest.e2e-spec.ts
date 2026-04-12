@@ -2,11 +2,9 @@ import { Test } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as request from 'supertest';
+import { BOT_COLORS } from '@flowboard/shared';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-
-// Bot colors (slots 2, 3, 4) — per D-13, excluded from guest assignment
-const BOT_COLORS = ['#F472B6', '#4ADE80', '#A78BFA'];
 
 describe('Guest Auth (E2E)', () => {
   let app: INestApplication;

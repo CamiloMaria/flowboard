@@ -6,24 +6,10 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { USER_COLORS, GUEST_COLORS } from '@flowboard/shared';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-
-/** Non-bot user colors from DESIGN.md palette */
-const USER_COLORS = [
-  '#22D3EE', // Electric Cyan
-  '#FBBF24', // Amber
-  '#FB7185', // Rose
-  '#60A5FA', // Blue
-  '#2DD4BF', // Teal
-];
-
-/** Bot colors (slots 2, 3, 4 — Maria, Carlos, Ana) — per D-13, exclude from guest */
-const BOT_COLORS = ['#F472B6', '#4ADE80', '#A78BFA'];
-
-/** Guest colors — palette slots not assigned to bots */
-const GUEST_COLORS = ['#22D3EE', '#FBBF24', '#FB7185', '#60A5FA', '#2DD4BF'];
 
 @Injectable()
 export class AuthService {
