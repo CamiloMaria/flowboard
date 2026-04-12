@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 6 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Monorepo scaffold with Turborepo, pnpm, Docker Compose, shared types
+- [x] 01-01-PLAN.md — Monorepo scaffold with Turborepo, pnpm, Docker Compose, shared types
 - [ ] 01-02-PLAN.md — Prisma 7 schema, PrismaModule, RedisModule, DB push
 - [ ] 01-03-PLAN.md — React frontend shell with Tailwind v4, routing, API helper
 - [ ] 01-04-PLAN.md — Dual WebSocket spike (Socket.io + y-websocket coexistence)
