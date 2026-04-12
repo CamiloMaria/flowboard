@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useDroppable } from '@dnd-kit/react';
+import { useSortable } from '@dnd-kit/react/sortable';
 import { Plus, MoreHorizontal } from 'lucide-react';
 import type { ListWithCards } from '@flowboard/shared';
 import { CardItem } from './CardItem';
@@ -8,6 +9,29 @@ import { InlineInput } from './InlineInput';
 import { useBoardStore } from '../../stores/board.store';
 import { useUpdateList, useDeleteList, useCreateCard } from '../../hooks/useBoardMutations';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+
+function EmptyListPlaceholder({ listId }: { listId: string }) {
+  const { ref } = useSortable({
+    id: `placeholder-${listId}`,
+    index: 0,
+    type: 'item',
+    accept: 'item',
+    group: listId,
+    disabled: true,
+  });
+
+  return (
+    <div
+      ref={ref}
+      className="flex flex-col items-center justify-center py-8 text-center min-h-[80px]"
+    >
+      <p className="font-body text-sm text-text-secondary">No cards yet</p>
+      <p className="font-body text-xs text-text-muted mt-1">
+        Drop a card here or click below to add one.
+      </p>
+    </div>
+  );
+}
 
 interface ColumnContainerProps {
   list: ListWithCards;
@@ -163,12 +187,7 @@ export function ColumnContainer({ list, boardId }: ColumnContainerProps) {
         style={{ maxHeight: 'calc(100vh - 160px)' }}
       >
         {sortedCards.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <p className="font-body text-sm text-text-secondary">No cards yet</p>
-            <p className="font-body text-xs text-text-muted mt-1">
-              Click below to add your first card.
-            </p>
-          </div>
+          <EmptyListPlaceholder listId={list.id} />
         ) : (
           <AnimatePresence mode="popLayout">
             {sortedCards.map((card, index) => (
