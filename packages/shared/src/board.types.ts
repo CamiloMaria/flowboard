@@ -26,3 +26,46 @@ export interface Card {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Composite types for API responses
+export interface ListWithCards extends List {
+  cards: Card[];
+}
+
+export interface BoardWithLists extends Board {
+  lists: ListWithCards[];
+}
+
+// WS event payloads (per D-13: events carry full updated entity)
+export interface CardMovePayload {
+  cardId: string;
+  fromListId: string;
+  toListId: string;
+  newPosition: number;
+  card: Card; // full updated card entity
+}
+
+export interface CardCreatePayload {
+  card: Card;
+}
+
+export interface CardUpdatePayload {
+  card: Card;
+}
+
+export interface CardDeletePayload {
+  cardId: string;
+  listId: string;
+}
+
+export interface ListCreatePayload {
+  list: List;
+}
+
+export interface ListUpdatePayload {
+  list: List;
+}
+
+export interface ListDeletePayload {
+  listId: string;
+}
