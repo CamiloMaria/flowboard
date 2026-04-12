@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
 import { FloatingToolbar } from './FloatingToolbar';
 import { ReconnectBanner } from './ReconnectBanner';
-import { useYjsProvider, type YjsConnectionStatus } from '../../hooks/useYjsProvider';
+import type { YjsConnectionStatus } from '../../hooks/useYjsProvider';
 import type { CoEditorInfo } from '@flowboard/shared';
 import type * as Y from 'yjs';
 import type { WebsocketProvider } from 'y-websocket';
@@ -14,7 +14,6 @@ import type { WebsocketProvider } from 'y-websocket';
 interface CollaborativeEditorProps {
   cardId: string;
   user: { name: string; color: string };
-  /** Optional: pass ydoc/provider from parent (if lifted) */
   ydoc?: Y.Doc;
   provider?: WebsocketProvider;
   status?: YjsConnectionStatus;
@@ -22,21 +21,11 @@ interface CollaborativeEditorProps {
 }
 
 export function CollaborativeEditor({
-  cardId,
   user,
-  ydoc: externalYdoc,
-  provider: externalProvider,
-  status: externalStatus,
-  coEditors: externalCoEditors,
+  ydoc,
+  provider,
+  status = 'connecting',
 }: CollaborativeEditorProps) {
-  // Use internal hook only if ydoc/provider not passed from parent
-  const internal = useYjsProvider({ cardId, user });
-  const ydoc = externalYdoc ?? internal.ydoc;
-  const provider = externalProvider ?? internal.provider;
-  const status = externalStatus ?? internal.status;
-  // coEditors exposed for parent consumption
-  void (externalCoEditors ?? internal.coEditors);
-
   const editor = useEditor(
     {
       extensions: [
@@ -69,7 +58,7 @@ export function CollaborativeEditor({
       editorProps: {
         attributes: {
           class:
-            'w-full min-h-[120px] bg-bg-card border border-border-subtle focus:border-border-focus rounded-[8px] py-3 px-4 font-body text-sm text-text-primary prose-invert outline-none',
+            'tiptap w-full min-h-[120px] bg-bg-card border border-border-subtle focus:border-border-focus rounded-[8px] py-3 px-4 font-body text-sm text-text-primary prose-invert outline-none',
         },
       },
     },
@@ -78,10 +67,9 @@ export function CollaborativeEditor({
 
   return (
     <div className="relative">
-      {(status === 'connecting' || status === 'disconnected' || status === 'failed') &&
-      status !== 'connected' ? (
+      {status !== 'connected' && (
         <ReconnectBanner status={status} />
-      ) : null}
+      )}
       {editor && <FloatingToolbar editor={editor} />}
       <EditorContent editor={editor} />
     </div>

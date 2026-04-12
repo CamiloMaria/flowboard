@@ -4,6 +4,10 @@ import { motion } from 'motion/react';
 import type { Card } from '@flowboard/shared';
 import { InlineInput } from './InlineInput';
 import { useUpdateCard, useDeleteCard } from '../../hooks/useBoardMutations';
+import { CollaborativeEditor } from '../editor/CollaborativeEditor';
+import { CoEditorAvatars } from '../editor/CoEditorAvatars';
+import { useYjsProvider } from '../../hooks/useYjsProvider';
+import { getCurrentUser } from '../../lib/user';
 
 interface CardDetailModalProps {
   card: Card;
@@ -17,13 +21,20 @@ export function CardDetailModal({ card, listName, boardId, onClose }: CardDetail
   const deleteCard = useDeleteCard(boardId);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [description, setDescription] = useState(card.descriptionText ?? '');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Sync local state when card prop changes (remote update via WebSocket)
-  useEffect(() => {
-    setDescription(card.descriptionText ?? '');
-  }, [card.descriptionText]);
+  // Get current user from JWT for collaborative editor
+  const currentUser = getCurrentUser();
+  const editorUser = {
+    name: currentUser?.name ?? 'Anonymous',
+    color: currentUser?.color ?? '#22D3EE',
+  };
+
+  // Lift Yjs provider to modal level so coEditors are available for the header
+  const { ydoc, provider, status, coEditors } = useYjsProvider({
+    cardId: card.id,
+    user: editorUser,
+  });
 
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -55,13 +66,6 @@ export function CardDetailModal({ card, listName, boardId, onClose }: CardDetail
   function handleTitleSave(newTitle: string) {
     updateCard.mutate({ id: card.id, title: newTitle });
     setIsEditingTitle(false);
-  }
-
-  function handleDescriptionBlur() {
-    const trimmed = description.trim();
-    if (trimmed !== (card.descriptionText ?? '').trim()) {
-      updateCard.mutate({ id: card.id, descriptionText: trimmed || undefined });
-    }
   }
 
   function handleDelete() {
@@ -108,8 +112,9 @@ export function CardDetailModal({ card, listName, boardId, onClose }: CardDetail
             duration: 0.25,
           }}
         >
-          {/* Close button */}
-          <div className="flex justify-end mb-2">
+          {/* Close button + co-editor avatars */}
+          <div className="flex items-center justify-between mb-2">
+            <CoEditorAvatars coEditors={coEditors} />
             <button
               type="button"
               onClick={onClose}
@@ -157,12 +162,13 @@ export function CardDetailModal({ card, listName, boardId, onClose }: CardDetail
               <label className="font-body text-sm text-text-secondary block mb-2">
                 Description
               </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                onBlur={handleDescriptionBlur}
-                placeholder="Add a description..."
-                className="w-full min-h-[120px] bg-bg-card border border-border-subtle focus:border-border-focus rounded-[8px] py-3 px-4 font-body text-sm text-text-primary placeholder:text-text-muted outline-none resize-y transition-colors"
+              <CollaborativeEditor
+                cardId={card.id}
+                user={editorUser}
+                ydoc={ydoc ?? undefined}
+                provider={provider ?? undefined}
+                status={status}
+                coEditors={coEditors}
               />
             </div>
 
