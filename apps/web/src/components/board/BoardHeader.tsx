@@ -1,4 +1,5 @@
 import { ConnectionStatus } from './ConnectionStatus';
+import { OnlineUsers } from '../presence/OnlineUsers';
 
 interface BoardHeaderProps {
   name: string;
@@ -10,7 +11,10 @@ export function BoardHeader({ name }: BoardHeaderProps) {
       <h1 className="font-display font-semibold text-2xl text-text-primary leading-[1.25]">
         {name}
       </h1>
-      <ConnectionStatus />
+      <div className="flex items-center gap-3">
+        <OnlineUsers />
+        <ConnectionStatus />
+      </div>
     </header>
   );
 }

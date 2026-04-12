@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { connectSocket } from '../lib/socket';
 import { getQueryClient } from '../providers/QueryProvider';
 import { useBoardStore } from '../stores/board.store';
+import { usePresenceStore } from '../stores/presence.store';
 import { isCardMoveInflight } from './useBoardMutations';
 import type {
   BoardWithLists,
@@ -12,6 +13,10 @@ import type {
   ListCreatePayload,
   ListUpdatePayload,
   ListDeletePayload,
+  OnlineUser,
+  PresenceJoinPayload,
+  PresenceLeavePayload,
+  PresenceCursorPayload,
 } from '@flowboard/shared';
 
 /**
@@ -46,6 +51,8 @@ export function useBoardSocket(boardId: string) {
       socket.emit('board:join', { boardId });
       // Re-sync board data after reconnect to catch missed events
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
+      // Clear stale presence — server will re-send on board:join
+      setOnlineUsers([]);
     };
 
     socket.on('connect', onConnect);
@@ -58,6 +65,41 @@ export function useBoardSocket(boardId: string) {
       setConnectionStatus('connected');
       socket.emit('board:join', { boardId });
     }
+
+    // --- Presence event handlers ---
+    const {
+      setOnlineUsers,
+      addOnlineUser,
+      removeOnlineUser,
+      updateCursor,
+      removeCursor,
+    } = usePresenceStore.getState();
+
+    const onPresenceUsers = (payload: { users: OnlineUser[] }) => {
+      setOnlineUsers(payload.users);
+    };
+
+    const onPresenceJoin = (payload: PresenceJoinPayload) => {
+      addOnlineUser(payload.user);
+    };
+
+    const onPresenceLeave = (payload: PresenceLeavePayload) => {
+      removeOnlineUser(payload.userId);
+      removeCursor(payload.userId);
+    };
+
+    const onPresenceCursor = (payload: PresenceCursorPayload) => {
+      updateCursor(payload.userId, {
+        x: payload.x,
+        y: payload.y,
+        lastUpdate: Date.now(),
+      });
+    };
+
+    socket.on('presence:users', onPresenceUsers);
+    socket.on('presence:join', onPresenceJoin);
+    socket.on('presence:leave', onPresenceLeave);
+    socket.on('presence:cursor', onPresenceCursor);
 
     // --- Board event handlers (D-13: apply changes directly to TanStack Query cache) ---
 
@@ -179,6 +221,10 @@ export function useBoardSocket(boardId: string) {
       socket.off('disconnect', onDisconnect);
       socket.io.off('reconnect_attempt', onReconnectAttempt);
       socket.io.off('reconnect', onReconnect);
+      socket.off('presence:users', onPresenceUsers);
+      socket.off('presence:join', onPresenceJoin);
+      socket.off('presence:leave', onPresenceLeave);
+      socket.off('presence:cursor', onPresenceCursor);
       socket.off('card:move', onCardMove);
       socket.off('card:create', onCardCreate);
       socket.off('card:update', onCardUpdate);

@@ -6,8 +6,10 @@ import { useBoardDnd } from '../../hooks/useBoardDnd';
 import { ColumnContainer } from './ColumnContainer';
 import { AddListGhost } from './AddListGhost';
 import { CardDragOverlay } from './CardDragOverlay';
+import { CursorOverlay } from '../presence/CursorOverlay';
 import { useCreateList } from '../../hooks/useBoardMutations';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { usePresence } from '../../hooks/usePresence';
 
 interface BoardCanvasProps {
   board: BoardWithLists;
@@ -28,6 +30,9 @@ export function BoardCanvas({ board }: BoardCanvasProps) {
   const createList = useCreateList(board.id);
   const reducedMotion = useReducedMotion();
   const boardRef = useRef<HTMLDivElement>(null);
+
+  // Emit own cursor position + heartbeat for presence
+  usePresence(board.id, boardRef);
 
   // Auto-scroll when dragging to board edges (D-11)
   useEffect(() => {
@@ -66,7 +71,7 @@ export function BoardCanvas({ board }: BoardCanvasProps) {
     >
       <div
         ref={boardRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden p-6 flex gap-4"
+        className="relative flex-1 overflow-x-auto overflow-y-hidden p-6 flex gap-4"
         style={{ scrollbarWidth: 'none' }}
       >
         <AnimatePresence>
@@ -96,6 +101,7 @@ export function BoardCanvas({ board }: BoardCanvasProps) {
             ))}
         </AnimatePresence>
         <AddListGhost onAdd={(name) => createList.mutate({ name })} />
+        <CursorOverlay boardRef={boardRef} />
       </div>
 
       <DragOverlay>

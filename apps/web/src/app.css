@@ -85,6 +85,22 @@
   font-size: 14px;
 }
 
+/* Remote cursor animations (D-07 idle breathe) */
+@keyframes cursor-breathe {
+  0%, 100% { filter: drop-shadow(0 0 8px var(--cursor-color)); }
+  50% { filter: drop-shadow(0 0 14px var(--cursor-color)); }
+}
+
+.cursor-breathe {
+  animation: cursor-breathe 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-breathe {
+    animation: none;
+  }
+}
+
 /* Collaboration cursor styles */
 .collaboration-cursor__caret {
   border-left: 2px solid;
