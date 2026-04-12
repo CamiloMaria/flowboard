@@ -217,11 +217,22 @@ export function useMoveCard(boardId: string) {
       inflightMoveCardIds.delete(vars.cardId);
       addToast('error', 'Card move failed. The card has been returned to its original position.');
     },
-    onSuccess: (_data, vars) => {
-      // Refetch board to get server-authoritative state
-      queryClient.invalidateQueries({ queryKey: ['board', boardId] });
-      // Delay clearing in-flight flag so socket event guard still blocks
-      // the broadcast that may arrive after the HTTP response
+    onSuccess: (movedCard: Card, vars) => {
+      // Direct cache update — no refetch, no race conditions.
+      // Remove card from ALL lists, add to target. Atomic, no duplication.
+      queryClient.setQueryData<BoardWithLists>(['board', boardId], (old) => {
+        if (!old) return old;
+        const lists = old.lists.map((l) => ({
+          ...l,
+          cards: l.cards.filter((c) => c.id !== vars.cardId),
+        }));
+        const target = lists.find((l) => l.id === movedCard.listId);
+        if (target) {
+          target.cards.push(movedCard);
+          target.cards.sort((a, b) => a.position - b.position);
+        }
+        return { ...old, lists };
+      });
       setTimeout(() => {
         inflightMoveCardIds.delete(vars.cardId);
       }, 3000);
