@@ -10,7 +10,7 @@ import { createWsAuthMiddleware } from '../auth/ws-auth.middleware';
 
 @WebSocketGateway({
   cors: { origin: process.env.CORS_ORIGIN || 'http://localhost:5173', credentials: true },
-  transports: ['websocket'],
+  transports: ['websocket', 'polling'],
 })
 export class BoardGateway implements OnGatewayInit {
   @WebSocketServer()
