@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { AppModule } from '../src/app.module';
 import {
   createYjsWebSocketServer,
@@ -11,6 +12,7 @@ import * as WebSocket from 'ws';
 describe('Dual WebSocket Spike (E2E)', () => {
   let app: INestApplication;
   let port: number;
+  let testJwt: string;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -19,6 +21,16 @@ describe('Dual WebSocket Spike (E2E)', () => {
 
     app = moduleRef.createNestApplication();
     await app.init();
+
+    // Generate a valid test JWT for Socket.io auth
+    const jwtService = app.get(JwtService);
+    testJwt = jwtService.sign({
+      sub: 'test-user-id',
+      email: 'test@example.com',
+      name: 'Test User',
+      color: '#22D3EE',
+      role: 'user',
+    });
 
     // Wire dual WebSocket — same as main.ts bootstrap
     const yjsWss = createYjsWebSocketServer();
@@ -33,10 +45,10 @@ describe('Dual WebSocket Spike (E2E)', () => {
     await app.close();
   });
 
-  it('Socket.io client connects on /socket.io/', (done) => {
+  it('Socket.io client connects on /socket.io/ with valid JWT', (done) => {
     const socket = ioClient(`http://localhost:${port}`, {
       transports: ['websocket'],
-      auth: { token: 'test-spike' },
+      auth: { token: testJwt },
     });
     socket.on('connect', () => {
       expect(socket.connected).toBe(true);
@@ -46,10 +58,41 @@ describe('Dual WebSocket Spike (E2E)', () => {
     socket.on('connect_error', (err) => done(err));
   }, 10000);
 
+  it('Socket.io rejects connection without token', (done) => {
+    const socket = ioClient(`http://localhost:${port}`, {
+      transports: ['websocket'],
+    });
+    socket.on('connect', () => {
+      socket.disconnect();
+      done(new Error('Should not connect without token'));
+    });
+    socket.on('connect_error', (err) => {
+      expect(err.message).toContain('Unauthorized');
+      socket.disconnect();
+      done();
+    });
+  }, 10000);
+
+  it('Socket.io rejects connection with invalid token', (done) => {
+    const socket = ioClient(`http://localhost:${port}`, {
+      transports: ['websocket'],
+      auth: { token: 'invalid-jwt-token' },
+    });
+    socket.on('connect', () => {
+      socket.disconnect();
+      done(new Error('Should not connect with invalid token'));
+    });
+    socket.on('connect_error', (err) => {
+      expect(err.message).toContain('Unauthorized');
+      socket.disconnect();
+      done();
+    });
+  }, 10000);
+
   it('Socket.io handles ping/pong message', (done) => {
     const socket = ioClient(`http://localhost:${port}`, {
       transports: ['websocket'],
-      auth: { token: 'test-spike' },
+      auth: { token: testJwt },
     });
     socket.on('connect', () => {
       socket.emit('ping-test');
@@ -75,7 +118,7 @@ describe('Dual WebSocket Spike (E2E)', () => {
   it('both transports work simultaneously', (done) => {
     const socketIoClient = ioClient(`http://localhost:${port}`, {
       transports: ['websocket'],
-      auth: { token: 'test-spike' },
+      auth: { token: testJwt },
     });
     const yjsWs = new WebSocket(`ws://localhost:${port}/yjs/test-doc`);
 
