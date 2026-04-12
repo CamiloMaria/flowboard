@@ -1,23 +1,23 @@
 ---
 phase: 01-foundation-auth
-fixed_at: 2026-04-12T04:30:00Z
+fixed_at: 2026-04-12T05:00:00Z
 review_path: .planning/phases/01-foundation-auth/01-REVIEW.md
-iteration: 1
-findings_in_scope: 9
-fixed: 9
+iteration: 2
+findings_in_scope: 14
+fixed: 14
 skipped: 0
 status: all_fixed
 ---
 
 # Phase 01: Code Review Fix Report
 
-**Fixed at:** 2026-04-12T04:30:00Z
+**Fixed at:** 2026-04-12T05:00:00Z
 **Source review:** .planning/phases/01-foundation-auth/01-REVIEW.md
-**Iteration:** 1
+**Iteration:** 2
 
 **Summary:**
-- Findings in scope: 9
-- Fixed: 9
+- Findings in scope: 14
+- Fixed: 14
 - Skipped: 0
 
 ## Fixed Issues
@@ -77,12 +77,42 @@ status: all_fixed
 **Commit:** a352457
 **Applied fix:** Changed `'demo-board-00000000-0000-0000-0000'` (invalid UUID format) to `'00000000-0000-0000-0000-000000000000'` (valid UUID v4 nil format, 8-4-4-4-12 hex structure). Ensures seed data passes any future UUID validation decorators on board endpoints.
 
+### IN-01: Console.log Statements in Production Code
+
+**Files modified:** `apps/api/src/websocket/yjs.setup.ts`, `apps/api/src/main.ts`
+**Commit:** 5312ef1
+**Applied fix:** Replaced all `console.log` statements with NestJS `Logger`. Created a `Logger('YjsSetup')` instance for yjs.setup.ts and used `Logger('Bootstrap')` in main.ts. Provides consistent log levels, formatting, and the ability to suppress logs in tests.
+
+### IN-02: Duplicate Color Arrays Between auth.service.ts and Test Code
+
+**Files modified:** `packages/shared/src/colors.ts`, `packages/shared/src/index.ts`, `apps/api/src/auth/auth.service.ts`, `apps/api/test/guest.e2e-spec.ts`
+**Commit:** c2969d9
+**Applied fix:** Extracted `USER_COLORS`, `BOT_COLORS`, and `GUEST_COLORS` to `packages/shared/src/colors.ts` and exported from the shared package index. Updated `auth.service.ts` to import `USER_COLORS` and `GUEST_COLORS` from `@flowboard/shared`, and `guest.e2e-spec.ts` to import `BOT_COLORS` from `@flowboard/shared`. Single source of truth for DESIGN.md palette values.
+
+### IN-03: Redundant CSS Import in main.tsx
+
+**Files modified:** `apps/web/src/main.tsx`
+**Commit:** ddb0617
+**Applied fix:** Removed `import './app.css'` from `main.tsx` since `App.tsx` already imports it. Since `main.tsx` renders `App`, the CSS is loaded exactly once through the component tree.
+
+### IN-04: UserPayload Type Missing email on Guest Tokens
+
+**Files modified:** `packages/shared/src/auth.types.ts`
+**Commit:** 136745d
+**Applied fix:** Made `email` optional (`email?: string`) in the `UserPayload` interface with a comment noting it's not present on guest tokens. This aligns the type contract with the implementation — `generateGuestToken()` does not include an `email` field in the JWT payload.
+
+### IN-05: @WebSocketGateway transports Restricted to websocket Only
+
+**Files modified:** `apps/api/src/websocket/board.gateway.ts`
+**Commit:** 92a1dfc
+**Applied fix:** Changed `transports: ['websocket']` to `transports: ['websocket', 'polling']` to allow Socket.io's long-polling fallback. Ensures the demo works for recruiters behind corporate proxies or older load balancers where WebSocket upgrade may fail.
+
 ## Skipped Issues
 
-None — all in-scope findings were fixed.
+None — all findings were fixed.
 
 ---
 
-_Fixed: 2026-04-12T04:30:00Z_
+_Fixed: 2026-04-12T05:00:00Z_
 _Fixer: the agent (gsd-code-fixer)_
-_Iteration: 1_
+_Iteration: 2_
