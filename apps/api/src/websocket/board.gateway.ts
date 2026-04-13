@@ -7,10 +7,13 @@ import {
   ConnectedSocket,
   MessageBody,
 } from '@nestjs/websockets';
+import { Inject, forwardRef } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { createWsAuthMiddleware } from '../auth/ws-auth.middleware';
 import { PresenceService } from '../presence/presence.service';
+import { DemoService } from '../demo/demo.service';
+import { DEMO_BOARD_ID } from '../demo/bot-user.interface';
 
 @WebSocketGateway({
   cors: { origin: process.env.CORS_ORIGIN || 'http://localhost:5173', credentials: true },
@@ -23,6 +26,8 @@ export class BoardGateway implements OnGatewayInit, OnGatewayDisconnect {
   constructor(
     private readonly jwtService: JwtService,
     private readonly presenceService: PresenceService,
+    @Inject(forwardRef(() => DemoService))
+    private readonly demoService: DemoService,
   ) {}
 
   afterInit(server: Server) {
@@ -70,6 +75,11 @@ export class BoardGateway implements OnGatewayInit, OnGatewayDisconnect {
       const onlineUsers =
         await this.presenceService.getOnlineUsers(data.boardId);
       client.emit('presence:users', { users: onlineUsers });
+
+      // Notify DemoService when a guest joins the demo board
+      if (data.boardId === DEMO_BOARD_ID && user.role === 'guest') {
+        this.demoService.notifyGuestJoined(data.boardId);
+      }
     }
   }
 
@@ -93,6 +103,11 @@ export class BoardGateway implements OnGatewayInit, OnGatewayDisconnect {
           userId: user.sub,
           boardId,
         });
+
+        // Notify DemoService when a guest leaves the demo board
+        if (boardId === DEMO_BOARD_ID && user.role === 'guest') {
+          this.demoService.notifyGuestLeft(boardId);
+        }
       }
     }
   }

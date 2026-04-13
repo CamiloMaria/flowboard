@@ -3,7 +3,7 @@ export interface OnlineUser {
   userId: string;
   name: string;
   color: string; // hex from USER_COLORS/BOT_COLORS/GUEST_COLORS
-  role: 'user' | 'guest';
+  role: 'user' | 'guest' | 'bot';
 }
 
 /** Remote cursor position on the board canvas */

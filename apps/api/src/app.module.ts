@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { BoardModule } from './board/board.module';
 import { CollabModule } from './collab/collab.module';
 import { PresenceModule } from './presence/presence.module';
+import { DemoModule } from './demo/demo.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
@@ -24,6 +25,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     BoardModule,
     CollabModule,
     PresenceModule,
+    DemoModule,
   ],
   controllers: [AppController],
   providers: [
