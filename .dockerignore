@@ -1,0 +1,45 @@
+node_modules
+dist
+.env
+.env.production
+.git
+.gitignore
+.planning
+.gstack
+.claude
+
+# Frontend (not needed in API image)
+apps/web
+
+# Docs
+*.md
+!packages/shared/package.json
+!apps/api/package.json
+LICENSE
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test & coverage
+coverage
+**/*.spec.ts
+**/*.test.ts
+**/*.e2e-spec.ts
+
+# Turbo cache
+.turbo
+
+# Docker volumes
+pgdata
+redisdata
+
+# Logs
+*.log
+npm-debug.log*

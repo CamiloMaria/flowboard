@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Public } from './auth/decorators/public.decorator';
 
@@ -8,7 +8,19 @@ export class AppController {
 
   @Public()
   @Get()
-  getHealth() {
-    return this.appService.getHealth();
+  getRoot() {
+    return { status: 'ok' };
+  }
+
+  @Public()
+  @Get('health')
+  async getHealth() {
+    const health = await this.appService.getHealth();
+
+    if (health.status !== 'ok') {
+      throw new HttpException(health, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    return health;
   }
 }
