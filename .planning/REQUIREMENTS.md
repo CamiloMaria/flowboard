@@ -79,9 +79,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PLSH-02**: Card create/archive animations (fade + scale)
 - [x] **PLSH-03**: Modal open/close animations (scale + fade with spring easing)
 - [x] **PLSH-04**: Cursor leave animation with ghost trace (fade out 400ms, glow lingers 600ms)
-- [ ] **PLSH-05**: Dark theme implemented per DESIGN.md (electric cyan accent, Space Grotesk + DM Sans typography)
-- [ ] **PLSH-06**: Loading skeleton screens during initial board fetch
-- [ ] **PLSH-07**: Toast notifications for errors and failed operations
+- [x] **PLSH-05**: Dark theme implemented per DESIGN.md (electric cyan accent, Space Grotesk + DM Sans typography)
+- [x] **PLSH-06**: Loading skeleton screens during initial board fetch
+- [x] **PLSH-07**: Toast notifications for errors and failed operations
 
 ### Deployment
 
@@ -185,9 +185,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLSH-02 | Phase 4: Demo Mode & Polish | Complete |
 | PLSH-03 | Phase 4: Demo Mode & Polish | Complete |
 | PLSH-04 | Phase 4: Demo Mode & Polish | Complete |
-| PLSH-05 | Phase 4: Demo Mode & Polish | Pending |
-| PLSH-06 | Phase 4: Demo Mode & Polish | Pending |
-| PLSH-07 | Phase 4: Demo Mode & Polish | Pending |
+| PLSH-05 | Phase 4: Demo Mode & Polish | Complete |
+| PLSH-06 | Phase 4: Demo Mode & Polish | Complete |
+| PLSH-07 | Phase 4: Demo Mode & Polish | Complete |
 | DPLY-01 | Phase 5: Deploy & Documentation | Pending |
 | DPLY-02 | Phase 5: Deploy & Documentation | Pending |
 | DPLY-03 | Phase 5: Deploy & Documentation | Pending |
