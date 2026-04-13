@@ -112,7 +112,13 @@ Plans:
   3. README includes architecture diagram showing dual WebSocket paths, Yjs CRDT flow, and Redis presence
   4. README includes GIF/video recording of the live demo and a "Why I Built This" section
   5. A fresh `git clone` → `pnpm install` → `pnpm dev` works without manual setup steps
-**Plans**: TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Production Docker infrastructure: Dockerfile, docker-compose.prod.yml, health endpoint, env templates
+- [ ] 05-02-PLAN.md — CI/CD pipeline, deploy script, Nginx reverse proxy with dual WebSocket paths
+- [ ] 05-03-PLAN.md — Vercel frontend deployment config with VITE_API_URL support
+- [ ] 05-04-PLAN.md — Portfolio-quality README: hero demo link, architecture diagram, tech narrative
 
 ## Progress
 
@@ -125,4 +131,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Board Core | 0/TBD | Not started | - |
 | 3. Real-time Collaboration | 0/5 | Planning complete | - |
 | 4. Demo Mode & Polish | 0/TBD | Not started | - |
-| 5. Deploy & Documentation | 0/TBD | Not started | - |
+| 5. Deploy & Documentation | 0/4 | Planning complete | - |
