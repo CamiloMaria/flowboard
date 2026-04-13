@@ -27,6 +27,49 @@ The demo mode was its own engineering puzzle. Three server-side bots (Maria, Car
 
 Every technical decision was deliberate. Yjs CRDTs for conflict-free editing (no last-write-wins on descriptions). FLOAT fractional indexing for card ordering with rebalancing after dense insertions. Optimistic updates with 5-second timeout and rollback animation for instant drag feedback. Redis-backed presence with heartbeat-based tracking for production-grade architecture. A monorepo with shared types to demonstrate full-stack TypeScript from database to UI.
 
+## Architecture
+
+```mermaid
+graph LR
+  subgraph Browser
+    React[React SPA]
+  end
+
+  subgraph Vercel
+    CDN[Vercel CDN]
+  end
+
+  subgraph Oracle Cloud VM
+    Nginx[Nginx + SSL]
+    subgraph Docker
+      API[NestJS API :3000]
+      PG[(PostgreSQL)]
+      RD[(Redis)]
+    end
+  end
+
+  React -->|Static Assets| CDN
+  React -->|REST /api/*| Nginx
+  React -->|Socket.io /socket.io/| Nginx
+  React -->|y-websocket /yjs/| Nginx
+
+  Nginx -->|proxy| API
+  API -->|Prisma ORM| PG
+  API -->|Presence & Pub/Sub| RD
+
+  style React fill:#61DAFB,color:#000
+  style API fill:#E0234E,color:#fff
+  style PG fill:#4169E1,color:#fff
+  style RD fill:#DC382D,color:#fff
+  style Nginx fill:#009639,color:#fff
+```
+
+The backend runs a single NestJS HTTP server with three distinct communication paths:
+
+- **Socket.io** (`/socket.io/`) — Board-level sync: card moves, list changes, CRUD broadcasts, and presence heartbeats. Uses rooms for per-board isolation so events only reach clients viewing the same board.
+- **y-websocket** (`/yjs/`) — Document-level CRDT sync: collaborative card description editing via TipTap + Yjs. Persists Y.Doc state to a PostgreSQL BYTEA column on last-user disconnect and on a 30-second debounce timer during active editing.
+- **Redis** — Presence state (who's online, cursor positions) via heartbeat-based tracking with automatic expiry. Also serves as the Socket.io adapter for horizontal scaling readiness.
+
 ## Tech Stack
 
 | Technology | Purpose |
