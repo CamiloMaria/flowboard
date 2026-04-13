@@ -32,8 +32,10 @@ export function useYjsProvider({ cardId, user }: UseYjsProviderOptions): UseYjsP
     const doc = new Y.Doc();
     const token = getAccessToken() ?? '';
 
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${wsProtocol}//${window.location.host}/yjs`;
+    // In production, VITE_API_URL points to Oracle Cloud backend (e.g. https://api.example.com).
+    // In local dev, empty → use current origin so Vite proxy handles /yjs WebSocket.
+    const apiUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    const wsUrl = apiUrl.replace(/^http/, 'ws') + '/yjs';
 
     const prov = new WebsocketProvider(wsUrl, `card:${cardId}`, doc, {
       params: { token },

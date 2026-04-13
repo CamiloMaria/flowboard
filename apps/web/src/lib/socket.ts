@@ -1,7 +1,9 @@
 import { io, type Socket } from 'socket.io-client';
 import { getAccessToken } from './api';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+/** Socket.io server URL. In production (Vercel), points to Oracle Cloud backend.
+ *  In local dev, empty string connects to current origin (Vite proxy at /socket.io). */
+const SOCKET_URL = import.meta.env.VITE_API_URL || '';
 
 let socket: Socket | null = null;
 

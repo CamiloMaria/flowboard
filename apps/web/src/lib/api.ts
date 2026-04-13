@@ -1,5 +1,9 @@
 import { getSocketId } from './socket';
 
+/** Base URL for API calls. In production (Vercel), points to Oracle Cloud backend.
+ *  In local dev, empty string keeps relative paths (Vite proxy handles routing). */
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 const TOKEN_KEY = 'flowboard_token';
 
 let accessToken: string | null = (() => {
@@ -48,7 +52,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
     }
   }
 
-  const response = await fetch(path, {
+  const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
     credentials: 'include', // Send cookies for refresh token
