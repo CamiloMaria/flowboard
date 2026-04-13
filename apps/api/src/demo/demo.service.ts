@@ -1,7 +1,8 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PresenceService } from '../presence/presence.service';
 import { BoardGateway } from '../websocket/board.gateway';
+import { BoardService } from '../board/board.service';
 import {
   BotUser,
   BOT_TEMPLATES,
@@ -9,6 +10,8 @@ import {
   GRACE_PERIOD_MS,
   HEARTBEAT_INTERVAL_MS,
 } from './bot-user.interface';
+import { runChoreography } from './choreography';
+import { runRandomBehaviorLoop } from './random-behavior';
 
 @Injectable()
 export class DemoService implements OnModuleInit {
@@ -35,7 +38,9 @@ export class DemoService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly presenceService: PresenceService,
+    @Inject(forwardRef(() => BoardGateway))
     private readonly boardGateway: BoardGateway,
+    private readonly boardService: BoardService,
   ) {}
 
   /** Resolve bot UUIDs from database on module init */
@@ -152,6 +157,28 @@ export class DemoService implements OnModuleInit {
     this.heartbeatInterval = setInterval(() => {
       void this.presenceService.refreshHeartbeat(DEMO_BOARD_ID);
     }, HEARTBEAT_INTERVAL_MS);
+
+    // Start choreography → random behavior pipeline
+    const signal = this.choreographyAbort!.signal;
+    const deps = {
+      boardService: this.boardService,
+      boardGateway: this.boardGateway,
+      bots: this.botUsers,
+      signal,
+    };
+
+    runChoreography(deps)
+      .then(() => {
+        if (!signal.aborted) {
+          this.logger.log('Choreography complete — switching to random behavior');
+          return runRandomBehaviorLoop(deps);
+        }
+      })
+      .catch((err) => {
+        if (err?.name !== 'AbortError') {
+          this.logger.error('Choreography error:', err);
+        }
+      });
   }
 
   /** Stop bots and clean up all state */
