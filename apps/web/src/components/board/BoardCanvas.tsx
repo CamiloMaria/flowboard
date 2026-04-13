@@ -31,6 +31,33 @@ export function BoardCanvas({ board }: BoardCanvasProps) {
   const reducedMotion = useReducedMotion();
   const boardRef = useRef<HTMLDivElement>(null);
 
+  // Track horizontal pointer velocity for drag overlay rotation (D-08)
+  const dragVelocityRef = useRef(0);
+  const lastPointerXRef = useRef(0);
+  const lastPointerTimeRef = useRef(0);
+
+  useEffect(() => {
+    if (!activeCard) {
+      dragVelocityRef.current = 0;
+      return;
+    }
+
+    function handlePointerMove(e: PointerEvent) {
+      const now = performance.now();
+      const dt = now - lastPointerTimeRef.current;
+      if (dt > 0) {
+        const dx = e.clientX - lastPointerXRef.current;
+        // Velocity in pixels/sec, smoothed with exponential decay
+        dragVelocityRef.current = dragVelocityRef.current * 0.7 + (dx / dt) * 1000 * 0.3;
+      }
+      lastPointerXRef.current = e.clientX;
+      lastPointerTimeRef.current = now;
+    }
+
+    window.addEventListener('pointermove', handlePointerMove);
+    return () => window.removeEventListener('pointermove', handlePointerMove);
+  }, [activeCard]);
+
   // Emit own cursor position + heartbeat for presence
   usePresence(board.id, boardRef);
 
@@ -105,7 +132,12 @@ export function BoardCanvas({ board }: BoardCanvasProps) {
       </div>
 
       <DragOverlay>
-        {activeCard ? <CardDragOverlay card={activeCard} /> : null}
+        {activeCard ? (
+          <CardDragOverlay
+            card={activeCard}
+            dragVelocity={dragVelocityRef.current}
+          />
+        ) : null}
       </DragOverlay>
     </DragDropProvider>
   );

@@ -103,13 +103,23 @@ export function CardDetailModal({ card, listName, boardId, onClose }: CardDetail
           aria-labelledby="modal-title"
           className="w-full max-w-2xl bg-bg-elevated border border-border-subtle rounded-[12px] shadow-modal p-6 mt-[10vh] mx-4 outline-none"
           initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.97, opacity: 0 }}
-          transition={{
-            type: 'spring',
-            stiffness: 300,
-            damping: 25,
-            duration: 0.25,
+          animate={{
+            scale: 1,
+            opacity: 1,
+            transition: {
+              type: 'spring',
+              stiffness: 300,
+              damping: 25,
+              mass: 0.8,
+            },
+          }}
+          exit={{
+            scale: 0.97,
+            opacity: 0,
+            transition: {
+              duration: 0.2,
+              ease: [0.65, 0, 0.35, 1],
+            },
           }}
         >
           {/* Close button + co-editor avatars */}
