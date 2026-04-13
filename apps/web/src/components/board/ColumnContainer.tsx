@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { motion } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
 import { useDroppable } from '@dnd-kit/react';
 import { useSortable } from '@dnd-kit/react/sortable';
 import { Plus, MoreHorizontal } from 'lucide-react';
@@ -8,7 +8,6 @@ import { CardItem } from './CardItem';
 import { InlineInput } from './InlineInput';
 import { useBoardStore } from '../../stores/board.store';
 import { useUpdateList, useDeleteList, useCreateCard } from '../../hooks/useBoardMutations';
-import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 function EmptyListDropZone({ listId }: { listId: string }) {
   const { ref } = useSortable({
@@ -53,8 +52,6 @@ export function ColumnContainer({ list, boardId, cardsById, getCardIdsForList }:
     // Normal rendering from cache
     return [...list.cards].sort((a, b) => a.position - b.position);
   }, [dndCardIds, cardsById, list.cards]);
-  const reducedMotion = useReducedMotion();
-
   const updateList = useUpdateList(boardId);
   const deleteList = useDeleteList(boardId);
   const createCard = useCreateCard(boardId);
@@ -199,28 +196,18 @@ export function ColumnContainer({ list, boardId, cardsById, getCardIdsForList }:
         {sortedCards.length === 0 ? (
           <EmptyListDropZone listId={list.id} />
         ) : (
-          sortedCards.map((card, index) => (
-            <motion.div
-              key={card.id}
-              layout
-              initial={false}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={
-                reducedMotion
-                  ? { duration: 0 }
-                  : {
-                      layout: { type: 'spring', stiffness: 200, damping: 25, mass: 0.8 },
-                    }
-              }
-            >
+          <AnimatePresence mode="popLayout">
+            {sortedCards.map((card, index) => (
               <CardItem
+                key={card.id}
                 card={card}
                 boardId={boardId}
                 index={index}
+                staggerIndex={index}
                 onClick={() => useBoardStore.getState().openCard(card.id)}
               />
-            </motion.div>
-          ))
+            ))}
+          </AnimatePresence>
         )}
       </div>
 

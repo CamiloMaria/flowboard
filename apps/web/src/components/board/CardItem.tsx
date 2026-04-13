@@ -1,27 +1,36 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useSortable } from '@dnd-kit/react/sortable';
 import type { Card } from '@flowboard/shared';
 import { InlineInput } from './InlineInput';
 import { useUpdateCard } from '../../hooks/useBoardMutations';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 interface CardItemProps {
   card: Card;
   boardId: string;
   index: number;
+  /** Card index within its column — used for cascade stagger delay (D-10) */
+  staggerIndex?: number;
   onClick: () => void;
 }
 
-const layoutTransition = {
-  type: 'spring' as const,
-  stiffness: 200,
-  damping: 25,
-  mass: 0.8,
-};
-
-export function CardItem({ card, boardId, index, onClick }: CardItemProps) {
+export function CardItem({ card, boardId, index, staggerIndex = 0, onClick }: CardItemProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const updateCard = useUpdateCard(boardId);
+  const reducedMotion = useReducedMotion();
+
+  // Layout transition with cascade stagger delay: 30ms per card (D-10)
+  const layoutTransition = useMemo(
+    () => ({
+      type: 'spring' as const,
+      stiffness: 200,
+      damping: 25,
+      mass: 0.8,
+      delay: reducedMotion ? 0 : staggerIndex * 0.03,
+    }),
+    [staggerIndex, reducedMotion],
+  );
 
   const { ref: sortableRef, isDragging } = useSortable({
     id: card.id,
@@ -64,7 +73,14 @@ export function CardItem({ card, boardId, index, onClick }: CardItemProps) {
     <motion.div
       ref={mergedRef}
       layout
-      transition={layoutTransition}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{
+        layout: layoutTransition,
+        opacity: { duration: reducedMotion ? 0 : 0.25, ease: 'easeOut' },
+        scale: { duration: reducedMotion ? 0 : 0.25, ease: 'easeOut' },
+      }}
       role="button"
       aria-label={card.title}
       tabIndex={0}
