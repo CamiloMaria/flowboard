@@ -6,6 +6,7 @@ import { BoardHeader } from '../components/board/BoardHeader';
 import { BoardCanvas } from '../components/board/BoardCanvas';
 import { BoardSkeleton } from '../components/board/BoardSkeleton';
 import { CardDetailModal } from '../components/board/CardDetailModal';
+import { DemoBanner } from '../components/demo/DemoBanner';
 import { useBoardStore } from '../stores/board.store';
 
 export function BoardPage() {
@@ -36,7 +37,8 @@ export function BoardPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-bg-base">
+    <div className={`h-screen flex flex-col bg-bg-base ${board.isDemo ? 'pt-[40px]' : ''}`}>
+      {board.isDemo && <DemoBanner />}
       <BoardHeader name={board.name} />
       <BoardCanvas board={board} />
 
