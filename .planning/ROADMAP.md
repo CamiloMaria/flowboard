@@ -99,7 +99,7 @@ Plans:
 - [x] 04-02-PLAN.md — DemoModule backend: bot lifecycle, guest read-only guards, presence injection
 - [x] 04-03-PLAN.md — Bot choreography engine: 60s scripted sequence + random weighted behavior
 - [x] 04-04-PLAN.md — Demo banner + guest UX: DemoBanner component, skeleton→activity flow, dark theme
-- [ ] 04-05-PLAN.md — Integration verification checkpoint: end-to-end demo flow
+- [x] 04-05-PLAN.md — Integration verification checkpoint: end-to-end demo flow
 **UI hint**: yes
 
 ### Phase 5: Deploy & Documentation
