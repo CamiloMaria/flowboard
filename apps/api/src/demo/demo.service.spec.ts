@@ -3,12 +3,14 @@ import { DemoService } from './demo.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { PresenceService } from '../presence/presence.service';
 import { BoardGateway } from '../websocket/board.gateway';
+import { BoardService } from '../board/board.service';
 import { DEMO_BOARD_ID, GRACE_PERIOD_MS } from './bot-user.interface';
 
 describe('DemoService', () => {
   let service: DemoService;
   let presenceService: jest.Mocked<PresenceService>;
   let boardGateway: jest.Mocked<BoardGateway>;
+  let boardService: jest.Mocked<BoardService>;
   let prismaService: any;
 
   beforeEach(async () => {
@@ -21,6 +23,13 @@ describe('DemoService', () => {
 
     boardGateway = {
       broadcastToBoard: jest.fn(),
+    } as any;
+
+    boardService = {
+      getBoard: jest.fn().mockResolvedValue({ lists: [] }),
+      moveCard: jest.fn().mockResolvedValue({}),
+      updateCard: jest.fn().mockResolvedValue({}),
+      createCard: jest.fn().mockResolvedValue({}),
     } as any;
 
     prismaService = {
@@ -39,6 +48,7 @@ describe('DemoService', () => {
         { provide: PrismaService, useValue: prismaService },
         { provide: PresenceService, useValue: presenceService },
         { provide: BoardGateway, useValue: boardGateway },
+        { provide: BoardService, useValue: boardService },
       ],
     }).compile();
 
