@@ -75,10 +75,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Polish
 
-- [ ] **PLSH-01**: Spring physics animations for card drag, drop settle, and layout shifts (Framer Motion)
-- [ ] **PLSH-02**: Card create/archive animations (fade + scale)
-- [ ] **PLSH-03**: Modal open/close animations (scale + fade with spring easing)
-- [ ] **PLSH-04**: Cursor leave animation with ghost trace (fade out 400ms, glow lingers 600ms)
+- [x] **PLSH-01**: Spring physics animations for card drag, drop settle, and layout shifts (Framer Motion)
+- [x] **PLSH-02**: Card create/archive animations (fade + scale)
+- [x] **PLSH-03**: Modal open/close animations (scale + fade with spring easing)
+- [x] **PLSH-04**: Cursor leave animation with ghost trace (fade out 400ms, glow lingers 600ms)
 - [ ] **PLSH-05**: Dark theme implemented per DESIGN.md (electric cyan accent, Space Grotesk + DM Sans typography)
 - [ ] **PLSH-06**: Loading skeleton screens during initial board fetch
 - [ ] **PLSH-07**: Toast notifications for errors and failed operations
@@ -181,10 +181,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEMO-04 | Phase 4: Demo Mode & Polish | Pending |
 | DEMO-05 | Phase 4: Demo Mode & Polish | Pending |
 | DEMO-06 | Phase 4: Demo Mode & Polish | Pending |
-| PLSH-01 | Phase 4: Demo Mode & Polish | Pending |
-| PLSH-02 | Phase 4: Demo Mode & Polish | Pending |
-| PLSH-03 | Phase 4: Demo Mode & Polish | Pending |
-| PLSH-04 | Phase 4: Demo Mode & Polish | Pending |
+| PLSH-01 | Phase 4: Demo Mode & Polish | Complete |
+| PLSH-02 | Phase 4: Demo Mode & Polish | Complete |
+| PLSH-03 | Phase 4: Demo Mode & Polish | Complete |
+| PLSH-04 | Phase 4: Demo Mode & Polish | Complete |
 | PLSH-05 | Phase 4: Demo Mode & Polish | Pending |
 | PLSH-06 | Phase 4: Demo Mode & Polish | Pending |
 | PLSH-07 | Phase 4: Demo Mode & Polish | Pending |

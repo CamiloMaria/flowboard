@@ -95,7 +95,7 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Animation refinements: card drag rotation, cursor ghost trace, column cascade stagger
+- [x] 04-01-PLAN.md — Animation refinements: card drag rotation, cursor ghost trace, column cascade stagger
 - [ ] 04-02-PLAN.md — DemoModule backend: bot lifecycle, guest read-only guards, presence injection
 - [ ] 04-03-PLAN.md — Bot choreography engine: 60s scripted sequence + random weighted behavior
 - [ ] 04-04-PLAN.md — Demo banner + guest UX: DemoBanner component, skeleton→activity flow, dark theme
