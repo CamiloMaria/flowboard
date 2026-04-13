@@ -66,12 +66,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Demo Mode
 
-- [ ] **DEMO-01**: 3 server-side bots (Maria, Carlos, Ana) operate via direct service calls (no WebSocket connections)
+- [x] **DEMO-01**: 3 server-side bots (Maria, Carlos, Ana) operate via direct service calls (no WebSocket connections)
 - [ ] **DEMO-02**: 60-second scripted choreography showcasing: card moves, collaborative editing with two cursors, label additions, independent cursor movement
 - [ ] **DEMO-03**: After scripted sequence, bots switch to random weighted behavior (Maria prefers moves, Carlos prefers typing, Ana prefers labels)
-- [ ] **DEMO-04**: Bots have colored cursors, avatars, and names in the presence system (indistinguishable from real users)
-- [ ] **DEMO-05**: Zero-friction demo entry — `/demo` route auto-creates guest JWT and shows live board with bots active
-- [ ] **DEMO-06**: `is_demo` boolean on board gates demo behavior (skip auth, prevent destructive mutations)
+- [x] **DEMO-04**: Bots have colored cursors, avatars, and names in the presence system (indistinguishable from real users)
+- [x] **DEMO-05**: Zero-friction demo entry — `/demo` route auto-creates guest JWT and shows live board with bots active
+- [x] **DEMO-06**: `is_demo` boolean on board gates demo behavior (skip auth, prevent destructive mutations)
 
 ### Polish
 
@@ -175,12 +175,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PRES-04 | Phase 3: Real-time Collaboration | Pending |
 | PRES-05 | Phase 3: Real-time Collaboration | Pending |
 | PRES-06 | Phase 3: Real-time Collaboration | Pending |
-| DEMO-01 | Phase 4: Demo Mode & Polish | Pending |
+| DEMO-01 | Phase 4: Demo Mode & Polish | Complete |
 | DEMO-02 | Phase 4: Demo Mode & Polish | Pending |
 | DEMO-03 | Phase 4: Demo Mode & Polish | Pending |
-| DEMO-04 | Phase 4: Demo Mode & Polish | Pending |
-| DEMO-05 | Phase 4: Demo Mode & Polish | Pending |
-| DEMO-06 | Phase 4: Demo Mode & Polish | Pending |
+| DEMO-04 | Phase 4: Demo Mode & Polish | Complete |
+| DEMO-05 | Phase 4: Demo Mode & Polish | Complete |
+| DEMO-06 | Phase 4: Demo Mode & Polish | Complete |
 | PLSH-01 | Phase 4: Demo Mode & Polish | Complete |
 | PLSH-02 | Phase 4: Demo Mode & Polish | Complete |
 | PLSH-03 | Phase 4: Demo Mode & Polish | Complete |

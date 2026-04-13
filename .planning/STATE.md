@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 4 context gathered
-last_updated: "2026-04-13T22:37:43.565Z"
+last_updated: "2026-04-13T22:43:43.323Z"
 last_activity: 2026-04-13
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 23
-  completed_plans: 19
-  percent: 83
+  completed_plans: 20
+  percent: 87
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 04 (demo-mode-polish) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-04-13
 
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02 P06 | 3min | 2 tasks | 5 files |
 | Phase 02 P07 | 4min | 3 tasks | 6 files |
 | Phase 04 P01 | 6min | 2 tasks | 7 files |
+| Phase 04 P02 | 8min | 1 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Success-only invalidation (onSuccess not onSettled) for all TanStack Query mutations prevents cascading error state
 - [Phase 02]: Disabled useSortable placeholder registers @dnd-kit group for empty lists as valid drop targets
 - [Phase 04]: Pointer velocity tracked via exponential decay smoothing since @dnd-kit 0.3.x has no velocity API
+- [Phase 04]: Bot UUIDs resolved at runtime via OnModuleInit (seed uses dynamic UUIDs)
+- [Phase 04]: forwardRef() handles WebSocketModule <-> DemoModule circular dependency
 
 ### Pending Todos
 
