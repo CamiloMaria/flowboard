@@ -92,7 +92,14 @@ Plans:
   3. Bots are indistinguishable from real users — they have colored cursors, avatars, and names in the presence system
   4. Card drag/drop, create/archive, and modal open/close all have spring physics animations (Framer Motion)
   5. The entire UI follows the DESIGN.md dark theme with electric cyan accent, Space Grotesk + DM Sans typography, cursor glow effects, and loading skeleton screens
-**Plans**: TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Animation refinements: card drag rotation, cursor ghost trace, column cascade stagger
+- [ ] 04-02-PLAN.md — DemoModule backend: bot lifecycle, guest read-only guards, presence injection
+- [ ] 04-03-PLAN.md — Bot choreography engine: 60s scripted sequence + random weighted behavior
+- [ ] 04-04-PLAN.md — Demo banner + guest UX: DemoBanner component, skeleton→activity flow, dark theme
+- [ ] 04-05-PLAN.md — Integration verification checkpoint: end-to-end demo flow
 **UI hint**: yes
 
 ### Phase 5: Deploy & Documentation
