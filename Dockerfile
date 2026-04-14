@@ -23,8 +23,7 @@ COPY apps/api/prisma apps/api/prisma
 # Generate Prisma client
 RUN cd apps/api && npx prisma generate
 
-# Build shared first (API depends on it), then API
-RUN pnpm --filter @flowboard/shared build || true
+# Build API (shared uses src directly — no build needed)
 RUN pnpm --filter @flowboard/api build
 
 # ── Stage 2: Production ──────────────────────────────────────
