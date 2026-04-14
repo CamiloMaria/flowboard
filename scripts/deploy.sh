@@ -17,7 +17,7 @@ docker compose -f "$COMPOSE_FILE" up --build -d
 
 echo "==> Waiting for API to be ready..."
 for i in $(seq 1 30); do
-  if curl -sf "http://localhost:3000/api/health" > /dev/null 2>&1; then
+  if curl -sf "http://localhost:3001/api/health" > /dev/null 2>&1; then
     echo "==> Health check passed!"
     break
   fi
