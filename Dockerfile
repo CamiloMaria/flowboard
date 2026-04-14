@@ -17,8 +17,9 @@ RUN pnpm install --frozen-lockfile
 COPY packages/shared/src packages/shared/src
 COPY apps/api/src apps/api/src
 
-# Copy Prisma schema for client generation
+# Copy Prisma schema + config for client generation
 COPY apps/api/prisma apps/api/prisma
+COPY apps/api/prisma.config.ts apps/api/prisma.config.ts
 
 # Generate Prisma client
 RUN cd apps/api && npx prisma generate
