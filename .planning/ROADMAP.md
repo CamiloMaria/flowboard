@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2: Board Core** - CRUD operations, drag-and-drop, fractional indexing, optimistic updates, Socket.io broadcasting
 - [ ] **Phase 3: Real-time Collaboration** - Yjs/TipTap collaborative editing, cursor presence system, Redis heartbeats
 - [ ] **Phase 4: Demo Mode & Polish** - Bot choreography, scripted + random behavior, animations, dark theme, visual effects
-- [ ] **Phase 5: Deploy & Documentation** - Railway/Vercel deploy, Docker Compose, README with architecture diagram and demo recording
+- [ ] **Phase 5: Deploy & Documentation** - Oracle Cloud/Vercel deploy, Docker Compose, CI/CD, README with architecture diagram and live demo link
 
 ## Phase Details
 
@@ -107,18 +107,18 @@ Plans:
 **Depends on**: Phase 4
 **Requirements**: DPLY-01, DPLY-02, DPLY-03, DPLY-04, DPLY-05, DPLY-06, DPLY-07
 **Success Criteria** (what must be TRUE):
-  1. Backend runs on Railway (with PostgreSQL + Redis) and frontend on Vercel, both accessible via public URLs
+  1. Backend runs on Oracle Cloud VM (with PostgreSQL + Redis via Docker) and frontend on Vercel, both accessible via public URLs
   2. `docker compose up` starts the full stack locally from a fresh clone
   3. README includes architecture diagram showing dual WebSocket paths, Yjs CRDT flow, and Redis presence
-  4. README includes GIF/video recording of the live demo and a "Why I Built This" section
+  4. README includes live demo link as hero asset and a "Why I Built This" section
   5. A fresh `git clone` → `pnpm install` → `pnpm dev` works without manual setup steps
 **Plans:** 4 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Production Docker infrastructure: Dockerfile, docker-compose.prod.yml, health endpoint, env templates
-- [ ] 05-02-PLAN.md — CI/CD pipeline, deploy script, Nginx reverse proxy with dual WebSocket paths
-- [ ] 05-03-PLAN.md — Vercel frontend deployment config with VITE_API_URL support
-- [ ] 05-04-PLAN.md — Portfolio-quality README: hero demo link, architecture diagram, tech narrative
+- [x] 05-01-PLAN.md — Production Docker infrastructure: Dockerfile, docker-compose.prod.yml, health endpoint, env templates
+- [x] 05-02-PLAN.md — CI/CD pipeline, deploy script, Nginx reverse proxy with dual WebSocket paths
+- [x] 05-03-PLAN.md — Vercel frontend deployment config with VITE_API_URL support
+- [x] 05-04-PLAN.md — Portfolio-quality README: hero demo link, architecture diagram, tech narrative
 
 ## Progress
 

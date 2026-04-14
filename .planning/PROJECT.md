@@ -25,7 +25,7 @@ A recruiter opens the URL and sees live collaboration (colored cursors, simultan
 - [ ] Drag-and-drop (@dnd-kit, fractional indexing with FLOAT positions, optimistic updates + rollback)
 - [ ] Demo mode (scripted 60-second bot choreography, then random weighted bot behavior)
 - [ ] Polish (Framer Motion animations, TailwindCSS dark theme per DESIGN.md, cursor glow effects)
-- [ ] Deploy + README (Railway/Vercel deploy, architecture diagram, GIF recording)
+- [ ] Deploy + README (Oracle Cloud/Vercel deploy, CI/CD pipeline, architecture diagram, live demo link)
 
 ### Out of Scope
 
@@ -56,7 +56,7 @@ A recruiter opens the URL and sees live collaboration (colored cursors, simultan
 
 - **Timeline**: Solo developer, 6-8 weeks (~80-100 hours). The dual WebSocket integration and demo bot choreography each have sharp edges that will eat debugging time.
 - **Tech stack**: NestJS + React + PostgreSQL + Redis + Prisma (decided). See design doc for full stack table.
-- **Deployment**: Railway (backend + PostgreSQL + Redis) + Vercel (frontend). Docker Compose for local dev.
+- **Deployment**: Oracle Cloud VM (backend + PostgreSQL + Redis via Docker) + Vercel (frontend). Docker Compose for local dev. CI/CD via GitHub Actions.
 - **Code quality**: Recruiters will open random source files. Clean, well-typed code with consistent patterns is a hard constraint.
 - **Design**: Dark-only theme per DESIGN.md. No light mode toggle.
 

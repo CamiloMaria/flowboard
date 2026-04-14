@@ -85,11 +85,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Deployment
 
-- [ ] **DPLY-01**: Backend deploys to Railway with PostgreSQL and Redis
+- [ ] **DPLY-01**: Backend deploys to Oracle Cloud VM with PostgreSQL and Redis via Docker
 - [ ] **DPLY-02**: Frontend deploys to Vercel with auto-deploy on push to main
 - [ ] **DPLY-03**: Docker Compose config for local development
 - [ ] **DPLY-04**: README with architecture diagram (dual WebSocket paths, Yjs CRDT flow, Redis presence)
-- [ ] **DPLY-05**: README with GIF/video recording of live demo
+- [ ] **DPLY-05**: README with live demo link as hero asset (recruiter clicks to see real app)
 - [ ] **DPLY-06**: README with "Why I Built This" section explaining technical decisions
 - [ ] **DPLY-07**: Codebase builds and deploys cleanly from fresh clone
 
