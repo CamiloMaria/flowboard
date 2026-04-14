@@ -9,9 +9,7 @@ export function HomePage() {
         <Link to="/demo" className="px-6 py-3 bg-accent text-surface-primary font-semibold rounded-lg hover:bg-accent-hover transition-colors">
           Try Demo
         </Link>
-        <Link to="/login" className="px-6 py-3 border border-accent text-accent rounded-lg hover:bg-accent/10 transition-colors">
-          Sign In
-        </Link>
+
       </div>
     </div>
   );

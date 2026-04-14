@@ -1,9 +1,8 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Collaboration from '@tiptap/extension-collaboration';
-import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import Placeholder from '@tiptap/extension-placeholder';
-import Link from '@tiptap/extension-link';
+import { collaborationCursor } from './collaboration-cursor';
 import { FloatingToolbar } from './FloatingToolbar';
 import { ReconnectBanner } from './ReconnectBanner';
 import type { YjsConnectionStatus } from '../../hooks/useYjsProvider';
@@ -30,7 +29,8 @@ export function CollaborativeEditor({
     {
       extensions: [
         StarterKit.configure({
-          history: false, // Yjs handles undo/redo
+          undoRedo: false, // Yjs handles undo/redo
+          link: { openOnClick: false },
         }),
         ...(ydoc
           ? [
@@ -42,23 +42,20 @@ export function CollaborativeEditor({
           : []),
         ...(provider
           ? [
-              CollaborationCursor.configure({
-                provider,
-                user: { name: user.name, color: user.color },
+              collaborationCursor(provider, {
+                name: user.name,
+                color: user.color,
               }),
             ]
           : []),
         Placeholder.configure({
           placeholder: 'Add a description...',
         }),
-        Link.configure({
-          openOnClick: false,
-        }),
       ],
       editorProps: {
         attributes: {
           class:
-            'tiptap w-full min-h-[120px] bg-bg-card border border-border-subtle focus:border-border-focus rounded-[8px] py-3 px-4 font-body text-sm text-text-primary prose-invert outline-none',
+            'tiptap w-full min-h-[120px] bg-bg-card border border-border-subtle rounded-b-[8px] py-3 px-4 font-body text-sm text-text-primary prose-invert outline-none focus:border-border-focus',
         },
       },
     },

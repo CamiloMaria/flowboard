@@ -4,8 +4,6 @@ import { QueryProvider } from './providers/QueryProvider';
 import { ToastProvider } from './components/ui/ToastProvider';
 import { HomePage } from './pages/HomePage';
 import { DemoPage } from './pages/DemoPage';
-import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
 import { BoardPage } from './pages/BoardPage';
 
 export default function App() {
@@ -17,8 +15,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/demo" element={<DemoPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
+
               <Route path="/board/:boardId" element={<BoardPage />} />
             </Routes>
           </div>

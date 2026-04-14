@@ -1,7 +1,6 @@
 import {
   Controller,
   Post,
-  Body,
   Req,
   Res,
   UnauthorizedException,
@@ -10,8 +9,6 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
 import { Public } from './decorators/public.decorator';
 
 const REFRESH_COOKIE_OPTIONS = {
@@ -25,33 +22,6 @@ const REFRESH_COOKIE_OPTIONS = {
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Public()
-  @Post('register')
-  async register(
-    @Body() dto: RegisterDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const { accessToken, refreshToken } = await this.authService.register(dto);
-
-    res.cookie('refresh_token', refreshToken, REFRESH_COOKIE_OPTIONS);
-
-    return { accessToken };
-  }
-
-  @Public()
-  @Post('login')
-  @HttpCode(200)
-  async login(
-    @Body() dto: LoginDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const { accessToken, refreshToken } = await this.authService.login(dto);
-
-    res.cookie('refresh_token', refreshToken, REFRESH_COOKIE_OPTIONS);
-
-    return { accessToken };
-  }
 
   @Public()
   @Post('guest')

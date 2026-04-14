@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';
 
@@ -7,7 +6,7 @@ const STORAGE_KEY = 'flowboard-demo-banner-dismissed';
 
 /**
  * Demo mode banner — fixed top, full-width, bg-elevated + accent left border, 40px height.
- * Shows "You're watching a live demo" text with Sign Up CTA per D-11.
+ * Shows "You're watching a live demo" text.
  * Dismissible via X button, persists in sessionStorage per D-13.
  */
 export function DemoBanner() {
@@ -34,13 +33,7 @@ export function DemoBanner() {
         >
           <p className="font-body text-sm text-text-secondary">
             You&apos;re watching a live demo &mdash; real-time collaboration powered by
-            WebSockets &amp; CRDTs.{' '}
-            <Link
-              to="/register"
-              className="text-accent hover:underline font-medium"
-            >
-              Sign Up
-            </Link>
+            WebSockets &amp; CRDTs.
           </p>
           <button
             onClick={handleDismiss}

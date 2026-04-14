@@ -1,8 +1,6 @@
 export type {
   UserPayload,
   TokenResponse,
-  RegisterDto,
-  LoginDto,
 } from './auth.types';
 
 export type {
