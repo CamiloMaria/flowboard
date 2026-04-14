@@ -29,14 +29,14 @@
     "lib0": "^0.2.117",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "prisma": "^7.7.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
     "socket.io": "^4.8.0",
     "ws": "^8.20.0",
     "y-protocols": "^1.0.7",
     "y-websocket": "^3.0.0",
-    "yjs": "^13.6.0",
-    "prisma": "^7.7.0"
+    "yjs": "^13.6.0"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -61,6 +61,7 @@
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.0",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.0"
   }
 }

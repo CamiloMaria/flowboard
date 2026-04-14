@@ -39,8 +39,8 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/shared/package.json packages/shared/
 COPY apps/api/package.json apps/api/
 
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
+# Install production dependencies only + tsx for seed script
+RUN pnpm install --frozen-lockfile --prod && npm install -g tsx
 
 # Copy built artifacts from builder
 COPY --from=builder /app/packages/shared/src packages/shared/src
@@ -62,4 +62,4 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-CMD ["sh", "-c", "cd apps/api && npx prisma migrate deploy && cd ../.. && node apps/api/dist/main.js"]
+CMD ["sh", "-c", "cd apps/api && npx prisma migrate deploy && tsx prisma/seed.ts && cd ../.. && node apps/api/dist/main.js"]
