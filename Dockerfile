@@ -21,8 +21,8 @@ COPY apps/api/src apps/api/src
 COPY apps/api/prisma apps/api/prisma
 COPY apps/api/prisma.config.ts apps/api/prisma.config.ts
 
-# Generate Prisma client
-RUN cd apps/api && npx prisma generate
+# Generate Prisma client (dummy URL — generate only needs the schema, not a real DB)
+RUN cd apps/api && DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
 
 # Build API (shared uses src directly — no build needed)
 RUN pnpm --filter @flowboard/api build
