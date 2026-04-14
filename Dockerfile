@@ -51,7 +51,8 @@ COPY --from=builder /app/apps/api/prisma apps/api/prisma
 # Copy generated Prisma client
 COPY --from=builder /app/apps/api/src/generated apps/api/src/generated
 
-# Run as non-root user
+# Ensure node user owns app files for prisma migrate and npx cache
+RUN chown -R node:node /app
 USER node
 
 EXPOSE 3000
