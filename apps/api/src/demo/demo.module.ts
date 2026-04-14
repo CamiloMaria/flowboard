@@ -5,7 +5,7 @@ import { PresenceModule } from '../presence/presence.module';
 import { DemoService } from './demo.service';
 
 @Module({
-  imports: [BoardModule, forwardRef(() => WebSocketModule), PresenceModule],
+  imports: [forwardRef(() => BoardModule), forwardRef(() => WebSocketModule), PresenceModule],
   providers: [DemoService],
   exports: [DemoService],
 })
