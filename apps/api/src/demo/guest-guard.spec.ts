@@ -1,4 +1,3 @@
-import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardController } from '../board/board.controller';
 import { BoardService } from '../board/board.service';
@@ -6,15 +5,14 @@ import { BoardGateway } from '../websocket/board.gateway';
 import { DEMO_BOARD_ID } from './bot-user.interface';
 
 /**
- * DEMO-06: Guest read-only guard prevents guests from mutating the demo board.
- * Verifies the `assertNotGuestOnDemo` guard on all 7 mutation endpoints.
+ * After removing sign in/sign up (demo-only auth), all users are guests.
+ * Guests must be able to mutate the demo board for the interactive demo to work.
  */
-describe('Guest read-only guard (DEMO-06)', () => {
+describe('Guest mutations on demo board (post sign-in removal)', () => {
   let controller: BoardController;
   let boardService: jest.Mocked<BoardService>;
 
   const guestUser = { sub: 'guest-uuid', role: 'guest' };
-  const normalUser = { sub: 'user-uuid', role: 'user' };
   const mockReq = { headers: {} } as any;
 
   beforeEach(async () => {
@@ -45,57 +43,32 @@ describe('Guest read-only guard (DEMO-06)', () => {
     controller = module.get<BoardController>(BoardController);
   });
 
-  it('guest cannot create a list on the demo board', async () => {
-    await expect(
-      controller.createList(DEMO_BOARD_ID, { name: 'Hacked' }, guestUser, mockReq),
-    ).rejects.toThrow(ForbiddenException);
-  });
-
-  it('guest cannot update a list on the demo board', async () => {
-    await expect(
-      controller.updateList(DEMO_BOARD_ID, 'list-1', { name: 'Hacked' }, guestUser, mockReq),
-    ).rejects.toThrow(ForbiddenException);
-  });
-
-  it('guest cannot delete a list on the demo board', async () => {
-    await expect(
-      controller.deleteList(DEMO_BOARD_ID, 'list-1', guestUser, mockReq),
-    ).rejects.toThrow(ForbiddenException);
-  });
-
-  it('guest cannot create a card on the demo board', async () => {
-    await expect(
-      controller.createCard(DEMO_BOARD_ID, { title: 'Hacked', listId: 'list-1' }, guestUser, mockReq),
-    ).rejects.toThrow(ForbiddenException);
-  });
-
-  it('guest cannot update a card on the demo board', async () => {
-    await expect(
-      controller.updateCard(DEMO_BOARD_ID, 'card-1', { title: 'Hacked' }, guestUser, mockReq),
-    ).rejects.toThrow(ForbiddenException);
-  });
-
-  it('guest cannot delete a card on the demo board', async () => {
-    await expect(
-      controller.deleteCard(DEMO_BOARD_ID, 'card-1', guestUser, mockReq),
-    ).rejects.toThrow(ForbiddenException);
-  });
-
-  it('guest cannot move a card on the demo board', async () => {
-    await expect(
-      controller.moveCard(DEMO_BOARD_ID, 'card-1', { targetListId: 'list-2', newPosition: 1000 }, guestUser, mockReq),
-    ).rejects.toThrow(ForbiddenException);
-  });
-
-  it('normal user CAN create a list on the demo board', async () => {
-    const result = await controller.createList(DEMO_BOARD_ID, { name: 'Legit' }, normalUser, mockReq);
+  it('guest can create a list on the demo board', async () => {
+    const result = await controller.createList(DEMO_BOARD_ID, { name: 'New List' }, guestUser, mockReq);
     expect(result).toBeDefined();
-    expect(boardService.createList).toHaveBeenCalled();
+    expect(boardService.createList).toHaveBeenCalledWith(DEMO_BOARD_ID, { name: 'New List' });
   });
 
-  it('guest CAN create a list on a non-demo board', async () => {
-    const result = await controller.createList('other-board-id', { name: 'Legit' }, guestUser, mockReq);
+  it('guest can update a list on the demo board', async () => {
+    const result = await controller.updateList(DEMO_BOARD_ID, 'list-1', { name: 'Renamed' }, guestUser, mockReq);
     expect(result).toBeDefined();
-    expect(boardService.createList).toHaveBeenCalled();
+    expect(boardService.updateList).toHaveBeenCalledWith(DEMO_BOARD_ID, 'list-1', { name: 'Renamed' });
+  });
+
+  it('guest can delete a list on the demo board', async () => {
+    await controller.deleteList(DEMO_BOARD_ID, 'list-1', guestUser, mockReq);
+    expect(boardService.deleteList).toHaveBeenCalledWith(DEMO_BOARD_ID, 'list-1');
+  });
+
+  it('guest can create a card on the demo board', async () => {
+    const result = await controller.createCard(DEMO_BOARD_ID, { title: 'New Card', listId: 'list-1' }, guestUser, mockReq);
+    expect(result).toBeDefined();
+    expect(boardService.createCard).toHaveBeenCalledWith(DEMO_BOARD_ID, { title: 'New Card', listId: 'list-1' }, undefined);
+  });
+
+  it('guest can move a card on the demo board', async () => {
+    const result = await controller.moveCard(DEMO_BOARD_ID, 'card-1', { targetListId: 'list-2', newPosition: 1000 }, guestUser, mockReq);
+    expect(result).toBeDefined();
+    expect(boardService.getCardById).toHaveBeenCalledWith('card-1');
   });
 });

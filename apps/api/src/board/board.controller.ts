@@ -9,7 +9,6 @@ import {
   HttpCode,
   HttpStatus,
   Req,
-  ForbiddenException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { BoardService } from './board.service';
@@ -20,7 +19,6 @@ import { UpdateListDto } from './dto/update-list.dto';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { MoveCardDto } from './dto/move-card.dto';
-import { DEMO_BOARD_ID } from '../demo/bot-user.interface';
 
 @Controller('boards')
 export class BoardController {
@@ -28,16 +26,6 @@ export class BoardController {
     private readonly boardService: BoardService,
     private readonly boardGateway: BoardGateway,
   ) {}
-
-  /** Reject guest mutations on the demo board (D-06) */
-  private assertNotGuestOnDemo(
-    user: { role?: string } | undefined,
-    boardId: string,
-  ): void {
-    if (user?.role === 'guest' && boardId === DEMO_BOARD_ID) {
-      throw new ForbiddenException('Demo board is read-only for guests');
-    }
-  }
 
   private getSocketId(req: Request): string | undefined {
     return req.headers['x-socket-id'] as string | undefined;
@@ -53,10 +41,9 @@ export class BoardController {
   async createList(
     @Param('boardId') boardId: string,
     @Body() dto: CreateListDto,
-    @CurrentUser() user: { sub: string; role?: string },
+    @CurrentUser() _user: { sub: string; role?: string },
     @Req() req: Request,
   ) {
-    this.assertNotGuestOnDemo(user, boardId);
     const list = await this.boardService.createList(boardId, dto);
     this.boardGateway.broadcastToBoard(boardId, 'list:create', { list }, this.getSocketId(req));
     return list;
@@ -67,10 +54,9 @@ export class BoardController {
     @Param('boardId') boardId: string,
     @Param('listId') listId: string,
     @Body() dto: UpdateListDto,
-    @CurrentUser() user: { sub: string; role?: string },
+    @CurrentUser() _user: { sub: string; role?: string },
     @Req() req: Request,
   ) {
-    this.assertNotGuestOnDemo(user, boardId);
     const list = await this.boardService.updateList(boardId, listId, dto);
     this.boardGateway.broadcastToBoard(boardId, 'list:update', { list }, this.getSocketId(req));
     return list;
@@ -81,10 +67,9 @@ export class BoardController {
   async deleteList(
     @Param('boardId') boardId: string,
     @Param('listId') listId: string,
-    @CurrentUser() user: { sub: string; role?: string },
+    @CurrentUser() _user: { sub: string; role?: string },
     @Req() req: Request,
   ) {
-    this.assertNotGuestOnDemo(user, boardId);
     await this.boardService.deleteList(boardId, listId);
     this.boardGateway.broadcastToBoard(boardId, 'list:delete', { listId }, this.getSocketId(req));
   }
@@ -97,7 +82,6 @@ export class BoardController {
     @CurrentUser() user: { sub: string; role?: string },
     @Req() req: Request,
   ) {
-    this.assertNotGuestOnDemo(user, boardId);
     // Guests don't have a row in the users table — skip createdById FK
     const userId = user.role === 'guest' ? undefined : user.sub;
     const card = await this.boardService.createCard(boardId, dto, userId);
@@ -110,10 +94,9 @@ export class BoardController {
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string,
     @Body() dto: UpdateCardDto,
-    @CurrentUser() user: { sub: string; role?: string },
+    @CurrentUser() _user: { sub: string; role?: string },
     @Req() req: Request,
   ) {
-    this.assertNotGuestOnDemo(user, boardId);
     const card = await this.boardService.updateCard(cardId, dto);
     this.boardGateway.broadcastToBoard(boardId, 'card:update', { card }, this.getSocketId(req));
     return card;
@@ -124,10 +107,9 @@ export class BoardController {
   async deleteCard(
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string,
-    @CurrentUser() user: { sub: string; role?: string },
+    @CurrentUser() _user: { sub: string; role?: string },
     @Req() req: Request,
   ) {
-    this.assertNotGuestOnDemo(user, boardId);
     const card = await this.boardService.deleteCard(cardId);
     this.boardGateway.broadcastToBoard(boardId, 'card:delete', {
       cardId,
@@ -141,10 +123,9 @@ export class BoardController {
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string,
     @Body() dto: MoveCardDto,
-    @CurrentUser() user: { sub: string; role?: string },
+    @CurrentUser() _user: { sub: string; role?: string },
     @Req() req: Request,
   ) {
-    this.assertNotGuestOnDemo(user, boardId);
     const fromCard = await this.boardService.getCardById(cardId);
     const fromListId = fromCard.listId;
     const result = await this.boardService.moveCard(cardId, dto);
